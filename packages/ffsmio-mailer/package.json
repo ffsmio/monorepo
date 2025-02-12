@@ -1,0 +1,54 @@
+{
+  "name": "@ffsm/mailer",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "repository": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-mailer",
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "description": "Formatter mail content and send mail",
+  "keywords": [
+    "mailer",
+    "email",
+    "nodemailer",
+    "formatter",
+    "send mail",
+    "mail",
+    "email content",
+    "email template",
+    "email formatter",
+    "email component"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "yarn build",
+    "example": "bash examples/script.sh"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.1",
+    "@types/nodemailer": "^6.4.17",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.1",
+    "jest": "^29.7.0",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "nodemailer": "^6.10.0"
+  }
+}
