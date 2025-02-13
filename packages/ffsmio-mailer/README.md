@@ -12,6 +12,10 @@ A flexible email service with driver support, template engine, rate limiting, an
 - 📎 URL-based attachments
 - 🔧 Full TypeScript support
 
+## Changelog
+
+- `0.0.2`: Remove `nodemailer` and make custom driver.
+
 ## Installation
 
 ```bash
