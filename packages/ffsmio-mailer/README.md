@@ -1,33 +1,38 @@
 # @ffsm/mailer
 
-A flexible email sending package for Node.js with template support, rate limiting, and retry capabilities.
+A flexible email service with driver support, template engine, rate limiting, and retry capabilities.
 
 ## Features
 
-- 📧 Simple and intuitive API
-- 📝 Template support with variables and loops
+- 🚗 Driver-based architecture
+- 📝 Template engine with variables and loops
 - 🧩 Reusable components
 - 🔁 Rate limiting for bulk emails
 - 🔄 Retry mechanism for failed attempts
 - 📎 URL-based attachments
-- 🔧 Fully typed with TypeScript
+- 🔧 Full TypeScript support
 
 ## Installation
 
 ```bash
 npm install @ffsm/mailer
+# or
+yarn add @ffsm/mailer
 ```
 
 ## Basic Usage
 
 ```typescript
 import { Mailer } from '@ffsm/mailer';
+import nodemailer from 'nodemailer';
 
-const mailer = new Mailer({
+const mailer = new Mailer(nodemailer, {
   host: 'smtp.gmail.com',
   port: 587,
-  user: 'your@gmail.com',
-  password: 'your-password',
+  auth: {
+    user: 'your@gmail.com',
+    pass: 'your-password',
+  },
   to: 'recipient@example.com',
   subject: 'Hello',
   content: 'World!',
@@ -36,38 +41,65 @@ const mailer = new Mailer({
 await mailer.send();
 ```
 
-## Template System
+## Using Static Factory
 
-The mailer includes a powerful template system that supports variables, loops, and components.
+```typescript
+const mailer = Mailer.from({
+  driver: nodemailer,
+  options: {
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+      user: 'your@gmail.com',
+      password: 'your-password',
+    },
+    to: 'recipient@example.com',
+    subject: 'Example Email',
+    content: 'Content here',
+  },
+  components: {
+    header: {
+      content: '<header>{title}</header>',
+      data: { title: 'Welcome' },
+    },
+  },
+  data: {
+    user: { name: 'John' },
+  },
+  retry: {
+    maxRetries: 3,
+    delay: 1000,
+  },
+  rateLimit: {
+    maxRequests: 100,
+    interval: 60000,
+  },
+});
+```
+
+## Template Features
 
 ### Variables
 
-Use curly braces to insert variables:
-
 ```typescript
-const mailer = new Mailer({
-  // ... config
+const mailer = new Mailer(nodemailer, {
+  host: 'smtp.gmail.com',
+  // ... other config
   subject: 'Welcome {user.name}!',
-  content: '<h1>Hello {user.name}!</h1><p>Your ID is {user.id}</p>',
+  content: '<h1>Hello {user.name}!</h1>',
 });
 
 mailer.setData({
-  user: {
-    name: 'John',
-    id: '12345',
-  },
+  user: { name: 'John' },
 });
 ```
 
 ### Loops
 
-Use @loop syntax for iterating over arrays:
-
 ```typescript
-const mailer = new Mailer({
+const mailer = new Mailer(nodemailer, {
   // ... config
   content: `
-    <h1>Your Items:</h1>
     {@loop:items}
       <div>{name}: ${price}</div>
     {@endloop:items}
@@ -84,14 +116,12 @@ mailer.setData({
 
 ### Components
 
-Create reusable components for template parts:
-
 ```typescript
-const mailer = new Mailer({
+const mailer = new Mailer(nodemailer, {
   // ... config
   content: `
     {@component:header}
-    <div>Main content</div>
+    <div>Content</div>
     {@component:footer}
   `,
 });
@@ -108,113 +138,51 @@ mailer.setComponents({
 });
 ```
 
-## Attachments
+## Using Different Mail Drivers
 
-Support both simple URLs and configuration objects:
+The package is designed to support different mail drivers. The driver is passed as the first parameter to the Mailer constructor.
+
+### With Nodemailer
 
 ```typescript
-const mailer = new Mailer({
-  // ... config
-  attachments: [
-    'https://example.com/document.pdf',
-    {
-      path: 'https://example.com/image.jpg',
-      filename: 'custom-name.jpg',
-    },
-  ],
-});
+import nodemailer from 'nodemailer';
+const mailer = new Mailer(nodemailer, options);
 ```
 
-## Rate Limiting
-
-Control email sending rate:
+### With Custom Driver
 
 ```typescript
-mailer.setRateLimit({
-  maxRequests: 100, // Maximum emails per interval
-  interval: 60000, // Interval in milliseconds (1 minute)
-});
-```
+class CustomDriver {
+  constructor(options: TransportOptions) {
+    // handle options
+  }
 
-## Retry Mechanism
+  static createTransport(options: TransportOptions) {
+    return new CustomeDriver(options);
+  }
 
-Add retry capability for failed attempts:
+  sendMail(sendOption: SendOptions) {
+    // Handle send
+  }
 
-```typescript
-mailer.setRetry({
-  maxRetries: 3, // Maximum retry attempts
-  delay: 1000, // Delay between retries in milliseconds
-});
-```
+  verify() {}
+}
 
-## Advanced Usage
-
-### Static Factory Method
-
-Create mailer instance with all configurations:
-
-```typescript
-const mailer = Mailer.from({
-  options: {
-    // Basic options
-    host: 'smtp.gmail.com',
-    port: 587,
-    user: 'user',
-    password: 'pass',
-    to: 'recipient@example.com',
-    subject: 'Subject',
-    content: 'Content',
-  },
-  // Template components
-  components: {
-    header: {
-      content: '<header>{title}</header>',
-      data: { title: 'Welcome' },
-    },
-  },
-  // Template data
-  data: {
-    user: { name: 'John' },
-  },
-  // Retry configuration
-  retry: {
-    maxRetries: 3,
-    delay: 1000,
-  },
-  // Rate limit configuration
-  rateLimit: {
-    maxRequests: 100,
-    interval: 60000,
-  },
-});
-```
-
-### Multiple Recipients
-
-Support various recipient formats:
-
-```typescript
-const mailer = new Mailer({
-  // ... config
-  to: ['user1@example.com', 'user2@example.com'],
-  cc: 'cc@example.com',
-  bcc: ['bcc1@example.com', 'bcc2@example.com'],
-  replyTo: 'reply@example.com',
-});
+const mailer = new Mailer(CustomDriver as MailDriver, options);
 ```
 
 ## API Reference
 
 ### MailerOptions
 
-Main configuration interface:
-
 ```typescript
 interface MailerOptions {
   host: string; // SMTP host
   port: number; // SMTP port
-  user: string; // SMTP username
-  password: string; // SMTP password
+  auth: {
+    user: string; // SMTP username
+    password: string; // SMTP password
+  };
   to: MailerAddress; // Recipient(s)
   content: string; // Email content
   subject?: string; // Email subject
@@ -227,47 +195,20 @@ interface MailerOptions {
 }
 ```
 
-### RetryOptions
-
-Retry configuration:
+### MailerStatic
 
 ```typescript
-interface RetryOptions {
-  maxRetries?: number; // Maximum retry attempts
-  delay?: number; // Delay between retries (ms)
-}
-```
-
-### RateLimitOptions
-
-Rate limiting configuration:
-
-```typescript
-interface RateLimitOptions {
-  maxRequests?: number; // Maximum requests per interval
-  interval?: number; // Interval period (ms)
-}
-```
-
-## Error Handling
-
-The package propagates SMTP errors and retry failures. Handle them appropriately:
-
-```typescript
-try {
-  await mailer.send();
-} catch (error) {
-  if (error.message.includes('Max retries reached')) {
-    // Handle retry failure
-  } else {
-    // Handle other errors
-  }
+interface MailerStatic<T = unknown> {
+  driver: any; // Mail driver (e.g., nodemailer)
+  options: MailerOptions; // Configuration options
+  components?: Components; // Template components
+  data?: ObjectOf<T>; // Template data
+  retry?: RetryOptions; // Retry configuration
+  rateLimit?: RateLimitOptions; // Rate limit configuration
 }
 ```
 
 ## TypeScript Support
-
-The package is written in TypeScript and provides full type definitions. Use generic type parameter for template data:
 
 ```typescript
 interface UserData {
@@ -275,12 +216,12 @@ interface UserData {
   email: string;
 }
 
-const mailer = new Mailer<UserData>({
+const mailer = new Mailer<UserData>(nodemailer, {
   // ... config
 });
 
 mailer.setData({
-  name: 'John', // TypeScript will check this
+  name: 'John', // Type checked
   email: 'john@example.com',
 });
 ```

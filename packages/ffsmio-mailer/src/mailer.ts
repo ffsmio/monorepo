@@ -1,11 +1,10 @@
-import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { RateLimiter } from './rate-limiter';
 import { Formatter } from './formatter';
 import { Retry } from './retry';
 import {
   Attachment,
   Components,
+  MailDriver,
   MailerAddress,
   MailerFrom,
   MailerOptions,
@@ -13,16 +12,12 @@ import {
   ObjectOf,
   RateLimitOptions,
   RetryOptions,
+  SendOptions,
+  Transporter,
 } from './types';
 
-export type { SMTPTransport };
-export { nodemailer };
-
 export class Mailer<T = unknown> {
-  private readonly transporter: nodemailer.Transporter<
-    SMTPTransport.SentMessageInfo,
-    SMTPTransport.Options
-  >;
+  private readonly transporter: Transporter;
 
   private readonly formatter: Formatter<T>;
 
@@ -44,34 +39,34 @@ export class Mailer<T = unknown> {
 
   private from: MailerFrom | undefined;
 
-  private to: MailerAddress;
+  private to: MailerAddress | undefined;
 
-  constructor(private options: MailerOptions) {
-    this.formatter = new Formatter<T>(options.content);
+  constructor(
+    private readonly driver: MailDriver,
+    private options: MailerOptions & Omit<SendOptions, 'html'>
+  ) {
+    this.formatter = new Formatter<T>(options.content || '');
     this.subject = new Formatter<T>(options.subject || '');
     this.transporter = this.createTransporter();
-    this.extractOptions();
+    this.extractOptions(options);
   }
 
-  private extractOptions() {
-    this.headers = this.options.headers || {};
-    this.replyTo = this.options.replyTo || this.options.from;
-    this.attachments = this.options.attachments || [];
-    this.cc = this.options.cc;
-    this.bcc = this.options.bcc;
-    this.from = this.options.from;
-    this.to = this.options.to;
+  private extractOptions(options: SendOptions) {
+    this.headers = options.headers || {};
+    this.replyTo = options.replyTo || options.from;
+    this.attachments = options.attachments || [];
+    this.cc = options.cc;
+    this.bcc = options.bcc;
+    this.from = options.from;
+    this.to = options.to;
   }
 
   private createTransporter() {
-    return nodemailer.createTransport({
+    return this.driver.createTransport({
       host: this.options.host,
       port: this.options.port,
       secure: false,
-      auth: {
-        user: this.options.user,
-        pass: this.options.password,
-      },
+      auth: this.options.auth,
     });
   }
 
@@ -100,6 +95,16 @@ export class Mailer<T = unknown> {
         },
       };
     });
+  }
+
+  setSender(options: SendOptions) {
+    this.extractOptions(options);
+
+    if (options.subject) {
+      this.subject.setContent(options.subject);
+    }
+
+    return this;
   }
 
   setComponents(components: Components) {
@@ -173,6 +178,16 @@ export class Mailer<T = unknown> {
 
   private async sendMail() {
     const attachments = await this.getAttachments();
+    console.log({
+      from: this.from,
+      to: this.to,
+      subject: this.getSubject(),
+      html: this.getContent(),
+      attachments,
+      replyTo: this.replyTo,
+      cc: this.cc,
+      bcc: this.bcc,
+    });
 
     const sendMail = () =>
       this.transporter.sendMail({
@@ -217,8 +232,11 @@ export class Mailer<T = unknown> {
   }
 
   static from<T = unknown>(config: MailerStatic<T>) {
-    const mailer = new Mailer<T>(config.options);
-    mailer.setComponents(config.components ?? {}).setData(config.data ?? {});
+    const mailer = new Mailer<T>(config.driver, config.options);
+    mailer
+      .setComponents(config.components ?? {})
+      .setData(config.data ?? {})
+      .extractOptions(config.options);
 
     config.retry && mailer.setRetry(config.retry);
     config.rateLimit && mailer.setRateLimit(config.rateLimit);

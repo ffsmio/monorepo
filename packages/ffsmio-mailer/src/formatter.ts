@@ -241,6 +241,11 @@ export class Formatter<T = unknown> {
     return this;
   }
 
+  setContent(content: string) {
+    this.content = content;
+    return this;
+  }
+
   format(data?: ObjectOf<T>) {
     if (data) {
       this.data = Object.assign({}, this.data, data);
