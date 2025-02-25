@@ -3,13 +3,37 @@
   "version": "0.0.1",
   "description": "Pagination offset-based and cursor-based for NestJS",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "S3Tech <s3tech.vn@gmail.com>",
   "license": "MIT",
   "private": false,
+  "keywords": [
+    "nestjs",
+    "pagination",
+    "offset-based",
+    "cursor-based"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nest-paginate"
+  },
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nest-paginate",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  },
   "devDependencies": {
     "@nestjs/common": "^11.0.10",
     "@types/express": "^5.0.0",
     "express": "^4.21.2",
+    "rimraf": "^6.0.1",
     "typeorm": "^0.3.20",
     "typescript": "^5.7.3"
   },
