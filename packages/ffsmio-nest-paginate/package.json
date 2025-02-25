@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/nest-paginate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Pagination offset-based and cursor-based for NestJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nest-paginate"
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nest-paginate"
   },
   "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nest-paginate",
   "scripts": {

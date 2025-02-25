@@ -5,6 +5,8 @@
 
 ## CHANGELOG
 
+- `0.0.2`: Support `setSelect`
+
 ## Installation
 
 Install dependencies
@@ -338,6 +340,17 @@ setPrimaryKey(key: string): this
 - **Description**: Sets the primary key of the entity.
 - **Parameters**:
   - `key`: Name of the primary key.
+- **Returns**: `this` - allows method chaining.
+
+### setSelect
+
+```typescript
+setSelect(fields: string[]): this
+```
+
+- **Description**: Set the select fields of the entity
+- **Parameters**:
+  - `fields`: Array of fields
 - **Returns**: `this` - allows method chaining.
 
 ### offset

@@ -28,6 +28,7 @@ export class PaginationService {
   private entityName: string;
   private resultName: string = 'data';
   private primaryKey: string = 'id';
+  private select: string[] = [];
 
   constructor(private readonly dataSource: DataSource) {}
 
@@ -74,6 +75,11 @@ export class PaginationService {
     }
 
     this.primaryKey = key;
+    return this;
+  }
+
+  setSelect(fields: string[]) {
+    this.select = [...fields];
     return this;
   }
 
@@ -242,6 +248,10 @@ export class PaginationService {
     });
   }
 
+  getAlias(defaultAlias?: string) {
+    return this.entityName || defaultAlias;
+  }
+
   async offset<T extends ObjectLiteral, K extends string = string>(
     repository: Repository<T>,
     dto: PaginationOffsetDto
@@ -250,6 +260,8 @@ export class PaginationService {
 
     const entityName = this.entityName || repository.metadata.tableName;
     const query = repository.createQueryBuilder(entityName);
+
+    this.select.length && query.select(this.select);
 
     const latestLimit = this.getLimit(+limit!);
     const resultName = this.resultName;
@@ -277,8 +289,11 @@ export class PaginationService {
   ) {
     const { cursor, limit, filters, order } = dto;
 
-    const entityName = this.entityName || repository.metadata.tableName;
+    const entityName = this.getAlias(repository.metadata.tableName);
     const query = repository.createQueryBuilder(entityName);
+
+    this.select.length && query.select(this.select);
+
     const direction = getCursorDirection(dto);
     const primary = this.primaryKey;
 
@@ -326,7 +341,7 @@ export class PaginationService {
   ) {
     const { filters } = dto;
 
-    const entityName = this.entityName || repository.metadata.tableName;
+    const entityName = this.getAlias(repository.metadata.tableName);
     const query = repository.createQueryBuilder(entityName);
 
     this.applyFilters(query, filters as PaginationFilters);
