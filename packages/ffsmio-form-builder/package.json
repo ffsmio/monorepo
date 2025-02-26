@@ -1,0 +1,13 @@
+{
+  "name": "@ffsm/form-builder",
+  "version": "0.0.1",
+  "description": "Metadata for build a form",
+  "main": "dist/index.js",
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}
