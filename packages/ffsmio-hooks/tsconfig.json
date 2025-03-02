@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"],
+      "@ffsm/hooks": ["src/index.ts"],
+      "@ffsm/hooks/*": ["src/*"]
+    },
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "rootDirs": ["src"],
+    "preserveSymlinks": true,
+    "lib": ["ES2016", "ES2016.Array.Include", "DOM"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
