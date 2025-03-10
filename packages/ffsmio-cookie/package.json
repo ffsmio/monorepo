@@ -11,7 +11,13 @@
     "cookie",
     "handler",
     "server",
-    "client"
+    "client",
+    "server-side",
+    "client-side",
+    "cookie server",
+    "cookie client",
+    "frontend",
+    "backend"
   ],
   "files": [
     "dist"
