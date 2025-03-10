@@ -1,0 +1,37 @@
+{
+  "name": "@ffsm/cookie",
+  "version": "0.0.3",
+  "description": "Cookie handler for Server side and client side",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "cookie",
+    "handler",
+    "server",
+    "client"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-cookie"
+  },
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-cookie",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  }
+}
