@@ -348,12 +348,29 @@ export class Cookie {
 
   set(name: string, value: string, options: CookieOptions = {}) {
     const serialized = this.serialize(name, value, options);
+    this.cookies[name] = { name, value, ...options };
 
     if (this.isServer()) {
       this.setServer(name, value, options);
     } else {
       document.cookie = serialized;
     }
+  }
+
+  private toMaxAge(value: string | number | Date | undefined) {
+    if (value === undefined) {
+      return;
+    }
+
+    if (this.isDate(value)) {
+      return Math.floor((value.getTime() - Date.now()) / 864e5); // (value - now) / 24 * 60 * 60 * 1000
+    }
+
+    if (this.is(value, 'string')) {
+      return new Date(value as string).getTime() - Date.now();
+    }
+
+    return value as number;
   }
 
   private setServer(name: string, value: string, options: CookieOptions = {}) {
@@ -366,6 +383,17 @@ export class Cookie {
     }
 
     if (!this.is(response, 'object')) {
+      return;
+    }
+
+    if (this.is(response.cookie, 'function')) {
+      const { expires, ...rest } = this.normalizeOptions(options);
+
+      if (!rest.maxAge && !this.is(expires, 'undefined')) {
+        rest.maxAge = this.toMaxAge(expires) || 0;
+      }
+
+      response.cookie(name, value, rest);
       return;
     }
 
