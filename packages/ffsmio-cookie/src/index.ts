@@ -40,11 +40,12 @@ export class Cookie {
     return typeof value === type;
   }
 
+  private isServer() {
+    return typeof window === 'undefined';
+  }
+
   private extract() {
-    if (
-      this.is(this.initialize, 'undefined') &&
-      !this.is(document, 'undefined')
-    ) {
+    if (this.is(this.initialize, 'undefined') && !this.isServer()) {
       this.initialize = document;
     }
 
@@ -101,17 +102,17 @@ export class Cookie {
 
     if (this.is(this.initialize.cookie, 'string')) {
       this.extractFromString(this.initialize.cookie);
-      return this;
+      return;
     }
 
     if (this.is(this.initialize, 'string')) {
       this.extractFromString(this.initialize);
-      return this;
+      return;
     }
 
     if (Array.isArray(this.initialize)) {
       this.extractFromArray(this.initialize);
-      return this;
+      return;
     }
   }
 
@@ -344,7 +345,7 @@ export class Cookie {
   set(name: string, value: string, options: CookieOptions = {}) {
     const serialized = this.serialize(name, value, options);
 
-    if (this.is(document, 'undefined')) {
+    if (this.isServer()) {
       this.setServer(name, value, options);
     } else {
       document.cookie = serialized;

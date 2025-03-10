@@ -21,9 +21,6 @@ import { Cookie } from '@ffsm/cookie';
 
 const cookie = Cookie.from(initialize);
 
-// OR
-const cookie = new Cookie(initialize);
-
 const staticGet = Cookie.get('access_token', {}, initialize);
 const staticGetAll = Cookie.getAll({}, initialize);
 
@@ -63,8 +60,7 @@ import { Cookie } from '@ffsm/cookie';
 
 export default function App() {
   useEffect(() => {
-    const cookie = new Cookie();
-    const accessToken = cookie.get('access_token', {})?.value;
+    const accessToken = Cookie.get('access_token', {})?.value;
     console.log(accessToken);
   }, []);
 
