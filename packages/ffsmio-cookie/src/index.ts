@@ -84,12 +84,16 @@ export class Cookie {
       return;
     }
 
-    if (
-      this.is(this.initialize.req?.headers, 'object') &&
-      this.is(this.initialize.req.headers.get, 'function')
-    ) {
-      this.extractFromString(this.initialize.req.headers.get('cookie'));
-      return;
+    if (this.is(this.initialize.req?.headers, 'object')) {
+      if (this.is(this.initialize.req.headers.get, 'function')) {
+        this.extractFromString(this.initialize.req.headers.get('cookie'));
+        return;
+      }
+
+      if (this.is(this.initialize.req.headers.cookie, 'string')) {
+        this.extractFromString(this.initialize.req.headers.cookie);
+        return;
+      }
     }
 
     if (
@@ -334,9 +338,9 @@ export class Cookie {
     return cloned;
   }
 
-  getAll() {
+  getAll(options?: ParseOptions) {
     const cookies = Object.keys(this.cookies).reduce((acc, name) => {
-      acc[name] = this.get(name)!;
+      acc[name] = this.get(name, options)!;
       return acc;
     }, {} as Record<string, CookieSerialized>);
     return Object.values(cookies);
@@ -413,11 +417,11 @@ export class Cookie {
     return new Cookie(initialize);
   }
 
-  static get(name: string, initialize?: any) {
-    return Cookie.from(initialize).get(name);
+  static get(name: string, options?: ParseOptions, initialize?: any) {
+    return Cookie.from(initialize).get(name, options);
   }
 
-  static getAll(initialize?: any) {
-    return Cookie.from(initialize).getAll();
+  static getAll(options?: ParseOptions, initialize?: any) {
+    return Cookie.from(initialize).getAll(options);
   }
 }

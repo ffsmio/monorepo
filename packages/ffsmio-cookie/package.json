@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/cookie",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Cookie handler for Server side and client side",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
