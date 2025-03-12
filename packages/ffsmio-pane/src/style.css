@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .Pane-container {
+    @apply relative w-full h-full flex flex-1 overflow-hidden box-border;
+  }
+
+  .Pane-container.Pane-horizontal {
+    @apply flex-col;
+  }
+
+  .Pane-item {
+    @apply relative w-full h-full;
+  }
+
+  .Pane-resizer {
+    @apply absolute;
+  }
+
+  .Pane-container:not(.Pane-horizontal) > .Pane-item > .Pane-resizer {
+    @apply h-full cursor-col-resize;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .Pane-container.Pane-horizontal > .Pane-item > .Pane-resizer {
+    @apply w-full cursor-row-resize;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
