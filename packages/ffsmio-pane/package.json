@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/pane",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Split pane for ReactJS, support vertical and horizontal",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
