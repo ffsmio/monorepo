@@ -324,7 +324,7 @@ export class Cookie {
     const cloned = { ...cookie };
 
     if (options.decode === true) {
-      options.decode = decodeURIComponent;
+      options.decode = Cookie.decode;
     } else if (!options.decode) {
       options.decode = (value: string) => value;
     }
@@ -451,5 +451,16 @@ export class Cookie {
 
   static getAll(options?: ParseOptions, initialize?: any) {
     return Cookie.from(initialize).getAll(options);
+  }
+
+  static decode(str: string) {
+    return str.replace(/(%[0-9A-F]{2})+/gi, (match) => {
+      try {
+        return decodeURIComponent(match);
+      } catch {
+        console.log('URI Component not decodable: ' + match);
+        return match;
+      }
+    });
   }
 }
