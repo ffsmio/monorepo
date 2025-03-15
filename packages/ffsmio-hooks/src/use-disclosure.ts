@@ -15,22 +15,38 @@ export interface UseDisclosureProps {
   open?: boolean;
   onOpen?(): void;
   onClose?(): void;
+  onBeforeClose?(): void;
+  onBeforeCloseAsync?(): Promise<void>;
+  onBeforeOpen?(): void;
+  onBeforeOpenAsync?(): Promise<void>;
 }
 
 export function useDisclosure(
   props: UseDisclosureProps = {},
   ref?: ForwardedRef<Disclosure | null>
 ) {
-  const { open = false, onOpen, onClose } = props;
+  const {
+    open = false,
+    onOpen,
+    onClose,
+    onBeforeOpen,
+    onBeforeOpenAsync,
+    onBeforeClose,
+    onBeforeCloseAsync,
+  } = props;
 
   const [isOpen, setIsOpen] = useState(open);
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = useCallback(async () => {
+    onBeforeOpen?.();
+    await onBeforeOpenAsync?.();
     setIsOpen(true);
     onOpen?.();
   }, [onOpen]);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
+    onBeforeClose?.();
+    await onBeforeCloseAsync?.();
     setIsOpen(false);
     onClose?.();
   }, [onClose]);

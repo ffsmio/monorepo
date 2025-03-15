@@ -27,13 +27,21 @@ The hook provides a simple way to control the open/closed state of components su
 export interface UseDisclosureProps {
   open?: boolean;
   onOpen?(): void;
+  onBeforeOpen?(): void;
+  onBeforeOpenAsync?(): void;
   onClose?(): void;
+  onBeforeClose?(): void;
+  onBeforeCloseAsync?(): void;
 }
 ```
 
 - **open**: Initialize state for disclosure. Defaults to false if not provided.
 - **onOpen**: Callback function that executes when the state changes to `true`.
+- **onBeforeOpen**: Callback function that executes before state changes to `true`.
+- **onBeforeOpenAsync**: Callback function that executes before state changes to `true`. Call with `await`.
 - **onClose**: Callback function that executes when the state changes to `false`.
+- **onBeforeClose**: Callback function that executes before state changes to `false`.
+- **onBeforeCloseAsync**: Callback function that executes before state changes to `false`. Call with `await`.
 
 **Ref**
 
