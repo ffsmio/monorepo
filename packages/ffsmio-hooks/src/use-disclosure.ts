@@ -44,14 +44,14 @@ export function useDisclosure(
     await onBeforeOpenAsync?.();
     setIsOpen(true);
     onOpen?.();
-  }, [onOpen]);
+  }, [onOpen, onBeforeOpen, onBeforeOpenAsync]);
 
   const handleClose = useCallback(async () => {
     onBeforeClose?.();
     await onBeforeCloseAsync?.();
     setIsOpen(false);
     onClose?.();
-  }, [onClose]);
+  }, [onClose, onBeforeClose, onBeforeCloseAsync]);
 
   useImperativeHandle(
     ref,
@@ -79,7 +79,7 @@ export function useDisclosure(
   }, []);
 
   const handleOpenChange = useCallback(
-    (open: boolean) => (open ? handleOpen() : handleClose()),
+    (newState: boolean) => (newState ? handleOpen() : handleClose()),
     [handleOpen, handleClose]
   );
 
