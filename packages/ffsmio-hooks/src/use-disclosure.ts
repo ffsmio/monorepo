@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 
@@ -36,6 +37,7 @@ export function useDisclosure(
   } = props;
 
   const [isOpen, setIsOpen] = useState(open);
+  const mounted = useRef(false);
 
   const handleOpen = useCallback(async () => {
     onBeforeOpen?.();
@@ -61,9 +63,20 @@ export function useDisclosure(
   );
 
   useEffect(() => {
+    if (!mounted.current) {
+      return;
+    }
+
     open ? handleOpen() : handleClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const handleOpenChange = useCallback(
     (open: boolean) => (open ? handleOpen() : handleClose()),
