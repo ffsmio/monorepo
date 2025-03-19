@@ -1,0 +1,38 @@
+{
+  "name": "@ffsm/nullish",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nullish"
+  },
+  "description": "Utilities for nullish coalescing operator",
+  "keywords": [
+    "nullish",
+    "nullish coalescing",
+    "nullish coalescing operator",
+    "nullish operator",
+    "nullish utilities",
+    "nullish coalescing utilities"
+  ],
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-nullish",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  }
+}
