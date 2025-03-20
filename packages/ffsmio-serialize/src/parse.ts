@@ -1,5 +1,5 @@
 import Nullish from '@ffsm/nullish';
-import { DeepObjectPrimitive, Primitive } from './types';
+import { DeepArrayPrimitive, DeepObjectPrimitive, Primitive } from './types';
 import { decode as _decode } from './decode';
 
 /**
@@ -124,14 +124,14 @@ function addValueToPath(
 function setNestedValue(
   obj: DeepObjectPrimitive,
   path: string[],
-  value: Primitive
+  value: Primitive | DeepObjectPrimitive | DeepArrayPrimitive
 ) {
   if (Nullish.isNullishOrEmpty(path)) {
     return;
   }
 
   if (path.length === 1) {
-    obj[path[0]] = value;
+    obj[path[0]] = value as Primitive;
     return;
   }
 
