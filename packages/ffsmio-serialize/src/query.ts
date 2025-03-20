@@ -7,13 +7,57 @@ import {
   ObjectPrimitive,
 } from './types';
 
+/**
+ * Options for serializing objects to query strings.
+ */
 export interface SerializeQueryOptions {
+  /**
+   * Specifies how arrays should be formatted in the query string.
+   * - `'bracket'`: Arrays are formatted as key[]=value1&key[]=value2
+   * - `'index'`: Arrays are formatted as key[0]=value1&key[1]=value2
+   * - `'comma'`: Arrays are formatted as key=value1,value2
+   * - `'separator'`: Arrays are formatted as key=value1{separator}value2
+   * - `'none'`: Arrays are formatted as key=value1&key=value2
+   * @default 'none'
+   */
   arrayFormat?: 'bracket' | 'index' | 'comma' | 'separator' | 'none';
+
+  /**
+   * The separator character to use when arrayFormat is 'separator' or 'comma'.
+   * @default ','
+   */
   arrayFormatSeparator?: string;
+
+  /**
+   * Whether to skip null and undefined values.
+   * @default false
+   */
   skipNull?: boolean;
+
+  /**
+   * Whether to skip empty string values.
+   * @default false
+   */
   skipEmptyString?: boolean;
+
+  /**
+   * Whether to encode URI components.
+   * @default true
+   */
   encode?: boolean | ((value: string) => string);
+
+  /**
+   * Whether to enforce strict key validation.
+   * @default true
+   */
   strict?: boolean;
+
+  /**
+   * Whether and how to sort the parameters.
+   * - true: Sort alphabetically
+   * - function: Sort using the provided function
+   * @default false
+   */
   sort?: boolean | ((a: string, b: string) => number);
 }
 
@@ -25,6 +69,51 @@ function isObject(value: unknown): value is object {
   return typeof value === 'object' && !Nullish.isNull(value);
 }
 
+/**
+ * Converts an object into a URL query string.
+ *
+ * This function transforms a JavaScript object into a URL query string,
+ * supporting various formats for arrays, nested objects, and special values.
+ *
+ * @param params - The object to convert to a query string
+ * @param options - Configuration options for query string generation
+ * @returns A URL query string without the leading '?'
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * query({ name: 'John', age: 30 });
+ * // 'name=John&age=30'
+ *
+ * // With arrays in bracket format
+ * query({ colors: ['red', 'blue'] }, { arrayFormat: 'bracket' });
+ * // 'colors[]=red&colors[]=blue'
+ *
+ * // With arrays in index format
+ * query({ colors: ['red', 'blue'] }, { arrayFormat: 'index' });
+ * // 'colors[0]=red&colors[1]=blue'
+ *
+ * // With arrays in comma format
+ * query({ colors: ['red', 'blue'] }, { arrayFormat: 'comma' });
+ * // 'colors=red,blue'
+ *
+ * // With nested objects
+ * query({ user: { name: 'John', profile: { age: 30 } } });
+ * // 'user[name]=John&user[profile][age]=30'
+ *
+ * // With null/undefined handling
+ * query({ name: 'John', email: null, phone: undefined }, { skipNull: true });
+ * // 'name=John'
+ *
+ * // With empty string handling
+ * query({ name: 'John', title: '' }, { skipEmptyString: true });
+ * // 'name=John'
+ *
+ * // With sorting
+ * query({ b: 2, a: 1, c: 3 }, { sort: true });
+ * // 'a=1&b=2&c=3'
+ * ```
+ */
 export function query(
   params: DeepObjectPrimitive,
   options: SerializeQueryOptions = {}

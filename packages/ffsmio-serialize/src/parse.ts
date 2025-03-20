@@ -2,12 +2,49 @@ import Nullish from '@ffsm/nullish';
 import { DeepObjectPrimitive, Primitive } from './types';
 import { decode as _decode } from './decode';
 
+/**
+ * Options for parsing query strings.
+ */
 export interface SerializeParseOptions {
+  /**
+   * Specifies how arrays are formatted in the query string.
+   * - `'bracket'`: Arrays are formatted as key[]=value1&key[]=value2
+   * - `'index'`: Arrays are formatted as key[0]=value1&key[1]=value2
+   * - `'comma'`: Arrays are formatted as key=value1,value2
+   * - `'separator'`: Arrays are formatted as key=value1{separator}value2
+   * - `'none'`: Arrays are formatted as key=value1&key=value2
+   * @default 'none'
+   */
   arrayFormat?: 'bracket' | 'index' | 'comma' | 'separator' | 'none';
+
+  /**
+   * The separator character to use when arrayFormat is 'separator' or 'comma'.
+   * @default ','
+   */
   arrayFormatSeparator?: string;
+
+  /**
+   * Whether to parse string values that look like numbers into JavaScript numbers.
+   * @default false
+   */
   parseNumbers?: boolean;
+
+  /**
+   * Whether to parse 'true' and 'false' strings into JavaScript booleans.
+   * @default false
+   */
   parseBooleans?: boolean;
+
+  /**
+   * Whether to decode URI components.
+   * @default true
+   */
   decode?: boolean | ((value: string) => string);
+
+  /**
+   * Whether to ignore the '?' with search and '#' with hash prefix in the query string.
+   * @default true
+   */
   ignorePrefix?: boolean;
 }
 
@@ -114,6 +151,43 @@ function setNestedValue(
   setNestedValue(obj[key] as DeepObjectPrimitive, path.slice(1), value);
 }
 
+/**
+ * Converts a URL query string into an object.
+ *
+ * This function parses a query string and transforms it into a structured object,
+ * handling various formats of arrays, nested objects, and primitive values.
+ *
+ * @param queryString - The query string to parse (with or without the leading '?')
+ * @param options - Configuration options for query string parsing
+ * @returns A structured object representing the parsed query string
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * parse('name=John&age=30');
+ * // { name: 'John', age: '30' }
+ *
+ * // With number and boolean parsing
+ * parse('active=true&count=42', { parseBooleans: true, parseNumbers: true });
+ * // { active: true, count: 42 }
+ *
+ * // With arrays in bracket format
+ * parse('colors[]=red&colors[]=blue', { arrayFormat: 'bracket' });
+ * // { colors: ['red', 'blue'] }
+ *
+ * // With arrays in index format
+ * parse('colors[0]=red&colors[1]=blue', { arrayFormat: 'index' });
+ * // { colors: ['red', 'blue'] }
+ *
+ * // With arrays in comma format
+ * parse('colors=red,blue', { arrayFormat: 'comma' });
+ * // { colors: ['red', 'blue'] }
+ *
+ * // With nested objects
+ * parse('user[name]=John&user[profile][age]=30');
+ * // { user: { name: 'John', profile: { age: '30' } } }
+ * ```
+ */
 export function parse(
   queryString: string,
   options: SerializeParseOptions = {}
