@@ -405,6 +405,7 @@ export default {
   isNotNullish,
   chain,
   map,
+  until,
   every,
   some,
   tryNull,
