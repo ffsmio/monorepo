@@ -1,10 +1,28 @@
 {
   "name": "@ffsm/serialize",
   "version": "0.0.1",
-  "description": "Handle string",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "private": false,
+  "description": "Utilities for serialize",
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "keywords": [
+    "serialize",
+    "serialize string",
+    "serialize utilities"
+  ],
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-serialize",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-serialize"
+  },
   "dependencies": {
     "@ffsm/nullish": "^0.0.1"
   },
@@ -12,5 +30,10 @@
     "@types/node": "^22.13.10",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
   }
 }

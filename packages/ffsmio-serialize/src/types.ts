@@ -1,6 +1,6 @@
 export type Primitive = string | number | boolean | null | undefined;
 
-export type ObjectPrimitive = Record<string, Primitive>;
+export type ObjectPrimitive = Record<string | number, Primitive>;
 
 export type ArrayPrimitive = Primitive[];
 

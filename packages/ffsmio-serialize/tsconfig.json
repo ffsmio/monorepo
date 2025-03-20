@@ -14,7 +14,10 @@
     "declaration": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@ffsm/nullish": ["../../node_modules/@ffsm/nullish"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

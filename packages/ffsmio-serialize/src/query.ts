@@ -1,19 +1,35 @@
 import Nullish from '@ffsm/nullish';
 import { encode as _encode } from './encode';
+import {
+  ArrayPrimitive,
+  DeepArrayPrimitive,
+  DeepObjectPrimitive,
+  ObjectPrimitive,
+} from './types';
+
+export interface SerializeQueryOptions {
+  arrayFormat?: 'bracket' | 'index' | 'comma' | 'separator' | 'none';
+  arrayFormatSeparator?: string;
+  skipNull?: boolean;
+  skipEmptyString?: boolean;
+  encode?: boolean | ((value: string) => string);
+  strict?: boolean;
+  sort?: boolean | ((a: string, b: string) => number);
+}
+
+function isValidKey(key: string): boolean {
+  return key.length > 0 && /^[a-zA-Z0-9_\-.[\]]+$/.test(key);
+}
+
+function isObject(value: unknown): value is object {
+  return typeof value === 'object' && !Nullish.isNull(value);
+}
 
 export function query(
-  obj: Record<string, any>,
-  options: {
-    arrayFormat?: 'bracket' | 'index' | 'comma' | 'separator' | 'none';
-    arrayFormatSeparator?: string;
-    skipNull?: boolean;
-    skipEmptyString?: boolean;
-    encode?: boolean;
-    strict?: boolean;
-    sort?: boolean | ((a: string, b: string) => number);
-  } = {}
+  params: DeepObjectPrimitive,
+  options: SerializeQueryOptions = {}
 ): string {
-  if (Nullish.isNullishOrEmpty(obj)) {
+  if (Nullish.isNullishOrEmpty(params)) {
     return '';
   }
 
@@ -29,10 +45,10 @@ export function query(
 
   const encoder = (value: string): string => {
     if (!encode) return value;
-    return _encode(value);
+    return _encode(value, encode);
   };
 
-  const formatPair = (key: string, value: any): string => {
+  const formatPair = (key: string, value: unknown): string => {
     if (Nullish.isNullish(value)) {
       return skipNull ? '' : `${encoder(key)}=`;
     }
@@ -48,39 +64,95 @@ export function query(
     return `${encoder(key)}=${encoder(String(value))}`;
   };
 
-  const formatArray = (key: string, array: any[]): string[] => {
-    if (array.length === 0) {
+  function formatArray(
+    key: string,
+    array: ArrayPrimitive | DeepArrayPrimitive
+  ): string[] {
+    if (Nullish.isNullishOrEmpty(array)) {
       return [formatPair(key, '')];
     }
 
     return array
       .map((value, index) => {
-        switch (arrayFormat) {
-          case 'bracket':
-            return formatPair(`${key}[]`, value);
-          case 'index':
-            return formatPair(`${key}[${index}]`, value);
-          case 'comma':
-          case 'separator':
-            return index === 0
-              ? formatPair(key, array.map(String).join(arrayFormatSeparator))
-              : '';
-          default:
-            return formatPair(key, value);
+        if (!Nullish.isNullish(value)) {
+          if (Array.isArray(value)) {
+            let nestedKey;
+
+            switch (arrayFormat) {
+              case 'bracket':
+                nestedKey = `${key}[]`;
+                break;
+              case 'index':
+                nestedKey = `${key}[${index}]`;
+                break;
+              case 'comma':
+              case 'separator':
+                nestedKey = `${key}${arrayFormatSeparator}${index}`;
+                break;
+              default:
+                nestedKey = key;
+            }
+
+            return formatArray(nestedKey, value).join('&');
+          } else {
+            let prefix;
+
+            switch (arrayFormat) {
+              case 'bracket':
+                prefix = `${key}[]`;
+                break;
+              case 'index':
+                prefix = `${key}[${index}]`;
+                break;
+              case 'comma':
+              case 'separator':
+                prefix = `${key}${arrayFormatSeparator}${index}`;
+                break;
+              default:
+                prefix = key;
+            }
+
+            return queryNested(prefix, value as ObjectPrimitive);
+          }
         }
       })
-      .filter(Boolean);
-  };
+      .filter(Boolean) as string[];
+  }
+
+  function queryNested(
+    prefix: string,
+    obj: ObjectPrimitive | DeepObjectPrimitive
+  ): string {
+    const pairs: string[] = [];
+
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+        const newKey = `${prefix}[${key}]`;
+
+        if (Array.isArray(value)) {
+          pairs.push(...formatArray(newKey, value));
+        } else if (isObject(value)) {
+          pairs.push(queryNested(newKey, value as ObjectPrimitive));
+        } else {
+          const pair = formatPair(newKey, value);
+          Nullish.isNullishOrEmpty(pair) || pairs.push(pair);
+        }
+      }
+    }
+
+    return pairs.filter(Boolean).join('&');
+  }
 
   let pairs: string[] = [];
-  let keys = Object.keys(obj);
+  let keys = Object.keys(params);
 
   if (sort) {
     keys = typeof sort === 'function' ? keys.sort(sort) : keys.sort();
   }
 
   for (const key of keys) {
-    const value = obj[key];
+    const value = params[key];
 
     if (!key || (strict && !isValidKey(key))) {
       continue;
@@ -88,49 +160,13 @@ export function query(
 
     if (Array.isArray(value)) {
       pairs = [...pairs, ...formatArray(key, value)];
-    } else if (typeof value === 'object' && value !== null) {
-      const nestedObj = flattenObject(key, value);
-      const nestedStr = query(nestedObj, options);
-      if (nestedStr) {
-        pairs.push(nestedStr);
-      }
+    } else if (isObject(value)) {
+      pairs.push(queryNested(key, value as ObjectPrimitive));
     } else {
       const pair = formatPair(key, value);
-      if (pair) {
-        pairs.push(pair);
-      }
+      Nullish.isNullishOrEmpty(pair) || pairs.push(pair);
     }
   }
 
   return pairs.filter(Boolean).join('&');
-}
-
-function isValidKey(key: string): boolean {
-  return key.length > 0 && /^[a-zA-Z0-9_\-.[\]]+$/.test(key);
-}
-
-function flattenObject(
-  prefix: string,
-  obj: Record<string, any>
-): Record<string, any> {
-  const result: Record<string, any> = {};
-
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const value = obj[key];
-      const newKey = prefix ? `${prefix}[${key}]` : key;
-
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        Object.assign(result, flattenObject(newKey, value));
-      } else {
-        result[newKey] = value;
-      }
-    }
-  }
-
-  return result;
 }
