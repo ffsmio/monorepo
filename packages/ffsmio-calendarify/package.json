@@ -1,0 +1,11 @@
+{
+  "name": "@ffsm/calendarify",
+  "version": "0.0.1",
+  "description": "Headless Calendar handle",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@ffsm/nullish": "^0.0.3"
+  }
+}
