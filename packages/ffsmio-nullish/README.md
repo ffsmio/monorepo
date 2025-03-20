@@ -313,6 +313,66 @@ const payload = {
 };
 ```
 
+### until
+
+Processes a value through a series of functions until a non-nullish result is produced.
+
+```typescript
+import { until } from '@ffsm/nullish';
+
+// Finding the first available value in a fallback chain
+const username = until(
+  null,
+  () => user.preferredName,
+  () => user.firstName + ' ' + user.lastName,
+  () => 'Guest_' + user.id,
+  () => 'Anonymous'
+);
+// Returns the first non-nullish value from the chain of attempts
+
+// Finding a valid configuration value
+const apiEndpoint = until(
+  config.customEndpoint, // If this exists, use it immediately
+  () => process.env.API_ENDPOINT,
+  () => localStorage.getItem('apiEndpoint'),
+  () => 'https://api.default.com'
+);
+
+// Generating and validating in a single chain
+const validId = until(
+  null,
+  () => generateRandomId(),
+  (id) => (isValidFormat(id) ? id : null), // Return null to try next function
+  () => 'default-id-12345'
+);
+
+// Early return if value already exists
+const existingData = until(
+  cachedData, // If not nullish, functions won't be executed
+  () => fetchFromDatabase(),
+  () => fetchFromAPI()
+);
+```
+
+#### Key Features
+
+- **Early Return**: If the initial value is not nullish, returns immediately without executing any functions
+- **Sequential Processing**: Applies functions in order until a non-nullish result is found
+- **Fallback Chain**: Perfect for implementing priority-based fallback strategies
+- **Short-Circuit Evaluation**: Stops processing as soon as a valid value is found
+- **Recovery Mechanism**: Can be used to recover from nullish values with multiple strategies
+
+#### When to Use
+
+Use `until` when you have multiple ways to obtain a value and want to try them in a specific order until one succeeds. It's particularly useful for:
+
+- Implementing fallback chains for configuration values
+- Setting default values with multiple alternatives
+- Attempting recovery operations in sequence
+- Loading data from multiple possible sources in order of preference
+
+Unlike `map` which stops when it encounters a nullish value, `until` stops when it finds a non-nullish value, making it ideal for fallback scenarios.
+
 ## Type Safety Benefits
 
 All functions in this package are designed with TypeScript type predicates, which means they provide excellent type narrowing in conditional blocks:

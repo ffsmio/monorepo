@@ -172,6 +172,57 @@ export function map<T, U>(
 }
 
 /**
+ * Processes a value through a series of functions until a non-nullish result is produced.
+ * If the initial value is not nullish, it's returned immediately without applying any functions.
+ *
+ * @template T - The type of the value being processed
+ * @param {T} value - The initial value to process
+ * @param {...((value: T) => T)[]} fns - Functions to apply sequentially until a non-nullish result is found
+ * @returns {T} The first non-nullish result, or the final value after all functions are applied
+ *
+ * @example
+ * // Try different ways to get a valid value
+ * const result = until(
+ *   null,                    // Start with null
+ *   () => localStorage.getItem('username'),  // Try localStorage
+ *   () => sessionStorage.getItem('username'), // Try sessionStorage
+ *   () => 'guest'            // Default to 'guest' if previous attempts return nullish
+ * );
+ * // Returns first non-nullish value from the chain
+ *
+ * @example
+ * // Skip processing if initial value is not nullish
+ * const name = until(
+ *   user.name,               // If this isn't nullish, other functions won't run
+ *   () => user.nickname,
+ *   () => 'Anonymous'
+ * );
+ * // Returns user.name if it's not nullish
+ *
+ * @example
+ * // Process until a condition is met
+ * const validId = until(
+ *   '',                      // Start with empty string (nullish by isNotNullish definition)
+ *   () => generateId(),      // Generate an ID
+ *   (id) => validateId(id) ? id : null // Return null if invalid, triggering next function
+ * );
+ */
+export function until<T>(value: T, ...fns: ((value: T) => T)[]) {
+  if (isNotNullish(value)) {
+    return value;
+  }
+
+  for (const fn of fns) {
+    value = fn(value);
+    if (isNotNullish(value)) {
+      return value;
+    }
+  }
+
+  return value;
+}
+
+/**
  * Checks if every element in an array is not nullish.
  * @param {unknown[]} value - The array to check
  * @returns {boolean} True if every element is not nullish
