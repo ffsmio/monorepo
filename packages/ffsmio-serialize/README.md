@@ -14,17 +14,17 @@ yarn add @ffsm/serialize
 
 ## Usage
 
-Using single function
+Import and use as a named function:
 
-```ts
+```typescript
 import { encode } from '@ffsm/serialize`;
 
 encode('&');
 ```
 
-OR using with default object
+OR import and use from the default export:
 
-```ts
+```typescript
 import Serialize from '@ffsm/serialize';
 
 Serialize.encode('&');
