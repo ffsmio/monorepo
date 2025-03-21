@@ -3,8 +3,41 @@
   "version": "0.0.1",
   "description": "Headless Calendar handle",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "private": false,
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-calendarify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-calendarify"
+  },
+  "keywords": [
+    "calendar",
+    "calendarify",
+    "calendar handle",
+    "calendar utilities",
+    "calendarify utilities",
+    "calendar handle utilities",
+    "calendar javascript",
+    "headless calendar"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  },
   "dependencies": {
     "@ffsm/nullish": "^0.0.3"
   }

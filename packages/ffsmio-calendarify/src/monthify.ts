@@ -2,38 +2,80 @@ import Nullish from '@ffsm/nullish';
 import { Dateify } from './dateify';
 import { Dayify } from './dayify';
 
+/**
+ * Options for configuring a Monthify instance.
+ */
 export interface MonthifyOptions {
+  /** The year to use. Defaults to current year. */
   year?: number;
+
+  /** The month to use (1-12). Defaults to current month. */
   month?: number;
+
+  /** The day to use. Defaults to current day. */
   day?: number;
+
+  /** The locale to use for formatting. */
   locale?: string;
+
+  /** Whether to include days from adjacent months to fill weeks. Defaults to true. */
   includeAdjacentMonths?: boolean;
+
+  /** The timezone offset in hours. */
   timezone?: number;
 }
 
+/**
+ * Options for moving to next or previous month.
+ *
+ * Excludes year, month, and day from MonthifyOptions.
+ */
 type MonthNextPrevOptions = Omit<MonthifyOptions, 'year' | 'month' | 'day'>;
 
+/**
+ * A class for working with calendar months and generating calendar displays.
+ *
+ * Provides tools for navigating between months and generating day arrays for each month.
+ */
 export class Monthify extends Dateify {
+  /** Days from the previous month to display at the start of a calendar view. */
   private daysOfPrevMonth: Dayify[] = [];
+  /** Days of the current month. */
   private daysOfCurrentMonth: Dayify[] = [];
+  /** Days from the next month to display at the end of a calendar view. */
   private daysOfNextMonth: Dayify[] = [];
 
+  /** The year of this month. */
   private year: number;
+  /** The month (1-12). */
   private month: number;
+  /** The reference day of the month. */
   private day: number;
 
   /**
-   * 0 - Sun
+   * The day of the week for the first day of the month (0-6, where 0 is Sunday).
    */
   private firstDayOfWeek: number;
+  /**
+   * The day of the week for the last day of the month (0-6, where 0 is Sunday).
+   */
   private lastDayOfWeek: number;
+  /** The number of days in this month. */
   private daysInMonth: number;
+  /** The Date object for the first day of this month. */
   private firstDayOfMonth: Date;
 
+  /** The locale to use for formatting. */
   private readonly locale?: string;
+  /** The timezone offset in hours. */
   private readonly timezone?: number;
+  /** Whether to include days from adjacent months to fill weeks. */
   private readonly includeAdjacentMonths: boolean;
 
+  /**
+   * Creates a new Monthify instance.
+   * @param {MonthifyOptions} [options={}] - Configuration options for the month.
+   */
   constructor(options: MonthifyOptions = {}) {
     super();
 
@@ -60,6 +102,11 @@ export class Monthify extends Dateify {
     this.adjust().generateCalendar().generatePrev().generateNext();
   }
 
+  /**
+   * Adjusts the month's properties to ensure valid dates and calculates key values.
+   * @private
+   * @returns {Monthify} This instance for method chaining.
+   */
   private adjust() {
     const adjusted = Dateify.from(this.year, this.month, this.day);
     const located = Dateify.locale(this.timezone, adjusted);
@@ -80,6 +127,11 @@ export class Monthify extends Dateify {
     return this;
   }
 
+  /**
+   * Generates days from the previous month to fill the start of the calendar.
+   * @private
+   * @returns {Monthify} This instance for method chaining.
+   */
   private generatePrev() {
     if (!this.includeAdjacentMonths || this.firstDayOfWeek < 1) {
       return this;
@@ -91,6 +143,11 @@ export class Monthify extends Dateify {
     return this;
   }
 
+  /**
+   * Generates days from the next month to fill the end of the calendar.
+   * @private
+   * @returns {Monthify} This instance for method chaining.
+   */
   private generateNext() {
     if (!this.includeAdjacentMonths || this.lastDayOfWeek === 6) {
       return this;
@@ -102,6 +159,11 @@ export class Monthify extends Dateify {
     return this;
   }
 
+  /**
+   * Generates Dayify objects for all days in the current month.
+   * @private
+   * @returns {Monthify} This instance for method chaining.
+   */
   private generateCalendar() {
     for (let day = 1; day <= this.daysInMonth; ++day) {
       this.daysOfCurrentMonth.push(
@@ -111,6 +173,11 @@ export class Monthify extends Dateify {
     return this;
   }
 
+  /**
+   * Gets a Monthify instance for the next month.
+   * @param {MonthNextPrevOptions} [options={}] - Options to apply to the new instance.
+   * @returns {Monthify} A new Monthify instance for the next month.
+   */
   next(options: MonthNextPrevOptions = {}) {
     let year = this.year;
     let month = this.month + 1;
@@ -123,6 +190,11 @@ export class Monthify extends Dateify {
     return this.clone(month, year, options);
   }
 
+  /**
+   * Gets a Monthify instance for the previous month.
+   * @param {MonthNextPrevOptions} [options={}] - Options to apply to the new instance.
+   * @returns {Monthify} A new Monthify instance for the previous month.
+   */
   prev(options: MonthNextPrevOptions = {}) {
     let year = this.year;
     let month = this.month - 1;
@@ -135,10 +207,23 @@ export class Monthify extends Dateify {
     return this.clone(month, year, options);
   }
 
+  /**
+   * Adds a specified number of months to this month.
+   * @param {number} months - The number of months to add (can be negative).
+   * @param {MonthifyOptions} [options] - Options to apply to the new instance.
+   * @returns {Monthify} A new Monthify instance for the calculated month.
+   */
   add(months: number, options?: MonthifyOptions) {
     return this.clone(this.month + months, this.year, options);
   }
 
+  /**
+   * Creates a clone of this instance with optionally modified properties.
+   * @param {number} [month] - The month to use (1-12). Defaults to this instance's month.
+   * @param {number} [year] - The year to use. Defaults to this instance's year.
+   * @param {MonthifyOptions} [options={}] - Additional options to apply to the new instance.
+   * @returns {Monthify} A new Monthify instance with the specified properties.
+   */
   clone(month?: number, year?: number, options: MonthifyOptions = {}) {
     year ??= this.year;
     month ??= this.month;
@@ -156,18 +241,36 @@ export class Monthify extends Dateify {
     });
   }
 
+  /**
+   * Checks if the current year is a leap year.
+   * @returns {boolean} True if the year is a leap year, false otherwise.
+   */
   isLeapYear() {
     return Dateify.isLeapYear(this.year);
   }
 
+  /**
+   * Gets an array of Dayify objects for all days in the current month.
+   * @returns {Dayify[]} Array of Dayify objects for the days of the current month.
+   */
   getDays() {
     return this.daysOfCurrentMonth;
   }
 
+  /**
+   * Gets an array of Dayify objects for days from the previous month that appear
+   * in the calendar view to fill the first week.
+   * @returns {Dayify[]} Array of Dayify objects for days from the previous month.
+   */
   getPrevDays() {
     return this.daysOfPrevMonth;
   }
 
+  /**
+   * Gets an array of Dayify objects for days from the next month that appear
+   * in the calendar view to fill the last week.
+   * @returns {Dayify[]} Array of Dayify objects for days from the next month.
+   */
   getNextDays() {
     return this.daysOfNextMonth;
   }
