@@ -181,8 +181,8 @@ export class Dateify {
   ];
 
   static getDayLabel(value: number, chars?: number) {
-    const dayOfWeek = value % 7;
-    const chars = chars % 4;
+    dayOfWeek = value % 7;
+    chars = chars % 4;
     return this.DayLabels[dayOfWeek][chars];
   }
 }
