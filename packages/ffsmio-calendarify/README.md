@@ -653,6 +653,56 @@ return (
 );
 ```
 
+#### getMonth()
+
+Gets the month number (1-12) of this Monthify instance.
+
+```typescript
+const march2025 = new Monthify({ month: 3, year: 2025 });
+console.log(march2025.getMonth()); // 3
+```
+
+#### getYear()
+
+Gets the year of this Monthify instance.
+
+```typescript
+const march2025 = new Monthify({ month: 3, year: 2025 });
+console.log(march2025.getYear()); // 2025
+```
+
+#### eq(other)
+
+Checks if this month is equal to another Monthify instance. Two months are considered equal if they have the same year and month.
+
+```typescript
+const march2025A = new Monthify({ month: 3, year: 2025 });
+const march2025B = new Monthify({ month: 3, year: 2025 });
+const april2025 = new Monthify({ month: 4, year: 2025 });
+const march2026 = new Monthify({ month: 3, year: 2026 });
+
+console.log(march2025A.eq(march2025B)); // true - same month and year
+console.log(march2025A.eq(april2025)); // false - different month
+console.log(march2025A.eq(march2026)); // false - different year
+```
+
+#### eqBy(month, year?)
+
+Checks if this month equals a specified month and optionally a year.
+
+```typescript
+const march2025 = new Monthify({ month: 3, year: 2025 });
+
+// Compare just the month
+console.log(march2025.eqBy(3)); // true - month is 3
+console.log(march2025.eqBy(4)); // false - month is not 4
+
+// Compare both month and year
+console.log(march2025.eqBy(3, 2025)); // true - month is 3 and year is 2025
+console.log(march2025.eqBy(3, 2026)); // false - year doesn't match
+console.log(march2025.eqBy(4, 2025)); // false - month doesn't match
+```
+
 ### Yearify
 
 Yearify is a class for working with entire years, providing access to all months within a year. It's useful for building year views in calendars, date pickers, and annual reports.

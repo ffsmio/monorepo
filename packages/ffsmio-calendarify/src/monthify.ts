@@ -328,4 +328,44 @@ export class Monthify<
       numberOfDays,
     };
   }
+
+  /**
+   * Gets the month number (1-12) of this Monthify instance.
+   * @returns {number} The month number (1-12).
+   */
+  getMonth() {
+    return this.month;
+  }
+
+  /**
+   * Gets the year of this Monthify instance.
+   * @returns {number} The year.
+   */
+  getYear() {
+    return this.year;
+  }
+
+  /**
+   * Checks if this month is equal to another Monthify instance.
+   * Two months are considered equal if they have the same year and month.
+   * @param {Monthify} other - The Monthify instance to compare with.
+   * @returns {boolean} True if the months are equal, false otherwise.
+   */
+  eq(other: Monthify) {
+    return this.year === other.getYear() && this.month === other.getMonth();
+  }
+
+  /**
+   * Checks if this month equals a specified month and optionally a year.
+   * @param {number} month - The month number (1-12) to compare with.
+   * @param {number} [year] - The year to compare with. If not provided, only the month is compared.
+   * @returns {boolean} True if this month matches the specified criteria, false otherwise.
+   */
+  eqBy(month: number, year?: number) {
+    if (Nullish.isNullish(year)) {
+      return this.month === month;
+    }
+
+    return this.year === year && this.month === month;
+  }
 }
