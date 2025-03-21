@@ -318,7 +318,7 @@ export class Monthify<
     const weeks: ArrayDayify[] = [];
 
     for (let i = 0; i < numberOfWeeks; i++) {
-      weeks.push(flatten.slice(i * 7, i * 7 + 7));
+      weeks.push(flatten.slice(i * 7, i * 7 + 7) as ArrayDayify);
     }
 
     return {
