@@ -307,18 +307,18 @@ export class Monthify<
       : Array(7 - this.lastDayOfWeek).fill(null);
 
     type ArrayDayify = T extends true
-      ? Dateify[]
+      ? Dayify[]
       : Options['includeAdjacentMonths'] extends true
-        ? Dateify[]
+        ? Dayify[]
         : Array<Dayify | null>;
 
-    const flatten = [...prev, ...days, ...next] as ArrayDayify;
+    const flatten = [...prev, ...days, ...next];
     const numberOfDays = flatten.length;
     const numberOfWeeks = Math.ceil(numberOfDays / 7);
     const weeks: ArrayDayify[] = [];
 
     for (let i = 0; i < numberOfWeeks; i++) {
-      weeks.push(flatten.slice(i * 7, i * 7 + 7) as ArrayDayify);
+      weeks.push(flatten.slice(i * 7, i * 7 + 7));
     }
 
     return {
