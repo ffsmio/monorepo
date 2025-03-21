@@ -562,6 +562,97 @@ const february2025 = new Monthify({ month: 2, year: 2025 });
 console.log(february2025.isLeapYear()); // false (2025 is not a leap year)
 ```
 
+#### getCalendar(addAdjacent?)
+
+Generates a complete calendar representation of the month with weeks. This method is essential for building calendar UI components, as it organizes days into a structured grid format.
+
+```typescript
+const march2025 = new Monthify({ month: 3, year: 2025 });
+
+// Get calendar using instance's includeAdjacentMonths setting
+const calendar = march2025.getCalendar();
+console.log(calendar.numberOfWeeks); // Number of weeks in the calendar
+console.log(calendar.weeks[0]); // First week of the calendar
+```
+
+The returned object contains everything needed to display a calendar:
+
+```typescript
+interface CalendarResult {
+  // 2D array of days organized in weeks
+  weeks: (Dayify | null)[][];
+  // Flat array of all days in calendar view
+  flatten: (Dayify | null)[];
+  // Number of weeks in the calendar
+  numberOfWeeks: number;
+  // Total number of days in the calendar view
+  numberOfDays: number;
+}
+```
+
+**Override instance settings:**
+
+You can force including adjacent month days regardless of how the Monthify instance was configured:
+
+```typescript
+// Create a month without adjacent days
+const march2025 = new Monthify({
+  month: 3,
+  year: 2025,
+  includeAdjacentMonths: false,
+});
+
+// But get a calendar with adjacent days for this specific view
+const calendarWithAdjacent = march2025.getCalendar(true);
+console.log(calendarWithAdjacent.weeks[0]); // First week with days from previous month
+```
+
+**Rendering examples:**
+
+Render a simple text calendar:
+
+```typescript
+calendar.weeks.forEach((week) => {
+  console.log(week.map((day) => (day ? day.getDay() : null)).join(' | '));
+});
+```
+
+Handling null values (days from adjacent months):
+
+```typescript
+calendar.weeks.forEach((week) => {
+  const weekRow = week
+    .map((day) => {
+      if (!day) return '   '; // Empty cell for null
+      return day.isToday() ? `[${day.getDay()}]` : ` ${day.getDay()} `; // Highlight today
+    })
+    .join('|');
+  console.log(weekRow);
+});
+```
+
+Building a more complex UI:
+
+```jsx
+// In a React component
+return (
+  <div className="calendar">
+    {calendar.weeks.map((week, i) => (
+      <div key={i} className="week">
+        {week.map((day, j) => (
+          <div
+            key={j}
+            className={`day ${!day ? 'empty' : ''} ${day?.isToday() ? 'today' : ''}`}
+          >
+            {day?.getDay() || ''}
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+);
+```
+
 ### Yearify
 
 Yearify is a class for working with entire years, providing access to all months within a year. It's useful for building year views in calendars, date pickers, and annual reports.

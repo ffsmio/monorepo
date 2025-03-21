@@ -37,7 +37,9 @@ type MonthNextPrevOptions = Omit<MonthifyOptions, 'year' | 'month' | 'day'>;
  *
  * Provides tools for navigating between months and generating day arrays for each month.
  */
-export class Monthify extends Dateify {
+export class Monthify<
+  Options extends MonthifyOptions = MonthifyOptions,
+> extends Dateify {
   /** Days from the previous month to display at the start of a calendar view. */
   private daysOfPrevMonth: Dayify[] = [];
   /** Days of the current month. */
@@ -76,7 +78,7 @@ export class Monthify extends Dateify {
    * Creates a new Monthify instance.
    * @param {MonthifyOptions} [options={}] - Configuration options for the month.
    */
-  constructor(options: MonthifyOptions = {}) {
+  constructor(options: Options = {} as Options) {
     super();
 
     this.timezone = options.timezone;
@@ -273,5 +275,57 @@ export class Monthify extends Dateify {
    */
   getNextDays() {
     return this.daysOfNextMonth;
+  }
+
+  /**
+   * Generates a calendar representation of the month with complete weeks.
+   * @param {boolean} [addAdjacent] - Override the instance's includeAdjacentMonths setting.
+   * If true, adjacent month days will be included regardless of the instance setting.
+   * If undefined, the instance's includeAdjacentMonths setting will be used.
+   * @returns {Object} An object containing:
+   *   - weeks: Array of arrays, each representing a week with 7 days (Dayify objects or null)
+   *   - flatten: A flat array of all days (including adjacent month days if applicable)
+   *   - numberOfWeeks: The number of weeks in the calendar view
+   *   - numberOfDays: The total number of days in the calendar view
+   */
+  getCalendar<T extends boolean>(addAdjacent?: T) {
+    const days = this.getDays();
+    const isAdjacent = addAdjacent || this.includeAdjacentMonths;
+    let $month: Monthify = this;
+
+    if (!this.includeAdjacentMonths && addAdjacent) {
+      $month = this.clone(this.month, this.year, {
+        includeAdjacentMonths: true,
+      });
+    }
+
+    const prev = isAdjacent
+      ? $month.getPrevDays()
+      : Array(this.firstDayOfWeek).fill(null);
+    const next = isAdjacent
+      ? $month.getNextDays()
+      : Array(7 - this.lastDayOfWeek).fill(null);
+
+    type ArrayDayify = T extends true
+      ? Dateify[]
+      : Options['includeAdjacentMonths'] extends true
+        ? Dateify[]
+        : Array<Dayify | null>;
+
+    const flatten = [...prev, ...days, ...next] as ArrayDayify;
+    const numberOfDays = flatten.length;
+    const numberOfWeeks = Math.ceil(numberOfDays / 7);
+    const weeks: ArrayDayify[] = [];
+
+    for (let i = 0; i < numberOfWeeks; i++) {
+      weeks.push(flatten.slice(i * 7, i * 7 + 7) as ArrayDayify);
+    }
+
+    return {
+      weeks,
+      flatten,
+      numberOfWeeks,
+      numberOfDays,
+    };
   }
 }
