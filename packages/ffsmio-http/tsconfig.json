@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"],
+      "@ffsm/cookie": ["../../node_modules/@ffsm/cookie"]
+    },
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "rootDirs": ["src"],
+    "preserveSymlinks": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

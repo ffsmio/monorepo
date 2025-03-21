@@ -1,0 +1,21 @@
+{
+  "name": "@ffsm/http",
+  "version": "0.0.1",
+  "description": "Http request with fetch api",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@ffsm/cookie": "^0.0.7",
+    "@types/node": "^22.13.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  },
+  "peerDependencies": {
+    "@ffsm/cookie": "^0.0.7"
+  },
+  "dependencies": {
+    "@ffsm/nullish": "^0.0.1",
+    "@ffsm/serialize": "^0.0.1"
+  }
+}
