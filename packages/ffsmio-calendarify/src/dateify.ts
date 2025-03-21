@@ -170,6 +170,19 @@ export class Dateify {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   }
 
+  /**
+   * Array of day labels with different formats.
+   *
+   * Each sub-array contains different formats for the same day:
+   *
+   * [0] - Full name (e.g., "Sunday")
+   *
+   * [1] - Single character (e.g., "S")
+   *
+   * [2] - Two characters (e.g., "SU")
+   *
+   * [3] - Three characters (e.g., "Sun")
+   */
   static DayLabels = [
     ['Sunday', 'S', 'SU', 'Sun'],
     ['Monday', 'M', 'MO', 'Mon'],
@@ -180,6 +193,16 @@ export class Dateify {
     ['Saturday', 'S', 'SA', 'Sat'],
   ];
 
+  /**
+   * Gets the label for a day of the week in different formats.
+   * @param {number} value - The day of the week (0-6, where 0 is Sunday).
+   * @param {number} [chars=0] - The format option (0-3):
+   *   - 0: Full name (e.g., "Sunday")
+   *   - 1: Single character (e.g., "S")
+   *   - 2: Two characters (e.g., "SU")
+   *   - 3: Three characters (e.g., "Sun")
+   * @returns {string} The day label in the specified format.
+   */
   static getDayLabel(value: number, chars: number = 0) {
     value = value % 7;
     chars = chars % 4;
