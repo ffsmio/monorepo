@@ -169,4 +169,20 @@ export class Dateify {
   static isLeapYear(year: number) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   }
+
+  static DayLabels = [
+    ['Sunday', 'S', 'SU', 'Sun'],
+    ['Monday', 'M', 'MO', 'Mon'],
+    ['Tuesday', 'T', 'TU', 'Tue'],
+    ['Wednesday', 'W', 'WE', 'Wed'],
+    ['Thursday', 'T', 'TH', 'Thu'],
+    ['Friday', 'F', 'FR', 'Fri'],
+    ['Saturday', 'S', 'SA', 'Sat'],
+  ];
+
+  static getDayLabel(value: number, chars?: number) {
+    const dayOfWeek = value % 7;
+    const chars = chars % 4;
+    return this.DayLabels[dayOfWeek][chars];
+  }
 }
