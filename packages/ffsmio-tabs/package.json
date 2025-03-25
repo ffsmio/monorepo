@@ -1,0 +1,60 @@
+{
+  "name": "@ffsm/tabs",
+  "version": "0.0.1",
+  "description": "Tabs component for React",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-tabs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-tabs"
+  },
+  "keywords": [
+    "React",
+    "component",
+    "tabs",
+    "tab",
+    "tab panel",
+    "tablist",
+    "tab button",
+    "tab content",
+    "tab pane",
+    "tab panes"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.0.13",
+    "@types/node": "22.13.10",
+    "@types/react": "19.0.10",
+    "autoprefixer": "10.4.21",
+    "cssnano": "7.0.6",
+    "postcss": "8.5.3",
+    "postcss-cli": "11.0.0",
+    "react": "19.0.0",
+    "rimraf": "6.0.1",
+    "tailwindcss": "4.0.13",
+    "typescript": "5.8.2"
+  },
+  "peerDependencies": {
+    "react": ">=16.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist && rimraf style.css",
+    "build:css": "npx postcss ./src/style.css -o ./style.css",
+    "build:com": "tsc",
+    "mini": "node minify.js",
+    "build": "yarn clean && yarn build:com && yarn build:css && yarn mini",
+    "prepublishOnly": "yarn build"
+  },
+  "dependencies": {
+    "@ffsm/as-array": "^0.0.1"
+  }
+}
