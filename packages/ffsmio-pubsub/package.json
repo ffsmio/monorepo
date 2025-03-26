@@ -1,0 +1,48 @@
+{
+  "name": "@ffsm/pubsub",
+  "version": "0.0.1",
+  "description": "A lightweight, type-safe publish-subscribe pattern implementation with integrated state management for JavaScript/TypeScript applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-pubsub",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-pubsub"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "pubsub",
+    "publish-subscribe",
+    "events",
+    "event-emitter",
+    "state-management",
+    "typescript",
+    "store",
+    "reactive",
+    "observable",
+    "channel",
+    "communication",
+    "message-bus",
+    "messaging",
+    "frontend",
+    "browser",
+    "vanilla-js"
+  ],
+  "devDependencies": {
+    "@types/node": "22.13.10",
+    "rimraf": "6.0.1",
+    "typescript": "5.8.2"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  }
+}
