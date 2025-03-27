@@ -4,13 +4,21 @@ export type ObjectPrimitive = Record<string | number, Primitive>;
 
 export type ArrayPrimitive = Primitive[];
 
-export type DeepObjectPrimitive = Record<
-  string,
-  Primitive | ObjectPrimitive | ArrayPrimitive
->;
+export type DeepObjectPrimitive = {
+  [key: string | number]:
+    | Primitive
+    | ObjectPrimitive
+    | ArrayPrimitive
+    | DeepObjectPrimitive
+    | DeepArrayPrimitive;
+};
 
 export type DeepArrayPrimitive = Array<
-  Primitive | ObjectPrimitive | ArrayPrimitive
+  | Primitive
+  | ObjectPrimitive
+  | ArrayPrimitive
+  | DeepObjectPrimitive
+  | DeepArrayPrimitive
 >;
 
 export type SerializeParams = DeepObjectPrimitive | DeepArrayPrimitive;
