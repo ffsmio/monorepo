@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/html-factory",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A lightweight utility for creating React HTML factory components with TypeScript support, ref forwarding, and className merging.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,6 +1,5 @@
 import {
   ComponentPropsWithRef,
-  ComponentRef,
   DetailedHTMLProps,
   forwardRef,
   HTMLAttributes,
@@ -11,11 +10,64 @@ import {
 import { clsx } from './clsx';
 
 /**
- * Type for HTML element props with proper TypeScript support
- * @template El The HTML element type, defaults to HTMLElement
+ * A utility type that represents detailed HTML props for a specific element type.
+ * This combines HTML attributes with the element type to create proper typing.
+ *
+ * @template El - The HTML element instance type (e.g., HTMLDivElement, HTMLButtonElement)
+ * @type {DetailedHTMLProps<HTMLAttributes<El>, El>}
+ */
+export type HTMLFactoryInfer<El> = DetailedHTMLProps<HTMLAttributes<El>, El>;
+
+/**
+ * A utility type that extracts the props type for a specific JSX intrinsic element.
+ * This provides direct access to the props type defined in JSX.IntrinsicElements.
+ *
+ * @template El - The HTML element tag that extends keyof JSX.IntrinsicElements (e.g., 'div', 'button')
+ * @type {JSX.IntrinsicElements[El]}
+ *
+ * @example
+ * // Type will be the props type for a div element
+ * type DivProps = HTMLElementProps<'div'>;
+ *
+ * // Usage in a component
+ * function CustomDiv(props: HTMLElementProps<'div'>) {
+ *   return <div {...props} />;
+ * }
  */
 export type HTMLElementProps<El extends keyof JSX.IntrinsicElements> =
-  DetailedHTMLProps<HTMLAttributes<El>, El>;
+  JSX.IntrinsicElements[El];
+
+/**
+ * A type utility that extracts the underlying HTML element instance type from a JSX intrinsic element.
+ * Uses conditional type inference to determine the actual DOM element type that corresponds to
+ * a given JSX element tag.
+ *
+ * @template El - The HTML element tag that extends keyof JSX.IntrinsicElements (e.g., 'div', 'button')
+ * @returns If the element can be inferred using HTMLFactoryInfer, returns the inferred instance type;
+ *          otherwise falls back to HTMLElement
+ *
+ * @example
+ * // Type will be HTMLButtonElement
+ * type ButtonElement = HTMLFactory<'button'>;
+ *
+ * // Type will be HTMLDivElement
+ * type DivElement = HTMLFactory<'div'>;
+ *
+ * // Usage with useRef
+ * const buttonRef = useRef<HTMLFactory<'button'>>(null);
+ *
+ * @example
+ * // Using with the factory function
+ * const Button = factory('button', 'Button');
+ * function Component() {
+ *   const ref = useRef<HTMLFactory<'button'>>(null);
+ *   return <Button ref={ref}>Click me</Button>;
+ * }
+ */
+export type HTMLFactory<El extends keyof JSX.IntrinsicElements> =
+  JSX.IntrinsicElements[El] extends HTMLFactoryInfer<infer InstanceType>
+    ? InstanceType
+    : HTMLElement;
 
 /**
  * Type for HTML factory component props
@@ -23,26 +75,6 @@ export type HTMLElementProps<El extends keyof JSX.IntrinsicElements> =
  */
 export type HTMlFactoryProps<El extends keyof JSX.IntrinsicElements> =
   PropsWithChildren<HTMLElementProps<El>>;
-
-/**
- * A type representing a reference to a React component factory for a specific HTML element.
- * This type combines React's ref functionality with the component reference for DOM elements.
- *
- * @template El - The HTML element type that extends keyof JSX.IntrinsicElements (e.g., 'div', 'span', 'button')
- * @type {Ref<ComponentRef<El>>} - A React ref pointing to the component reference of the specified element
- *
- * @example
- * // Declaring a ref for a button factory component
- * const buttonRef = useRef<HTMLFactory<'button'>>(null);
- *
- * // Using with a factory component
- * <Button ref={buttonRef}>Click me</Button>
- *
- * @since 0.0.2
- */
-export type HTMLFactory<El extends keyof JSX.IntrinsicElements> = Ref<
-  ComponentRef<El>
->;
 
 /**
  * Processes and merges HTML props with special handling for className
@@ -53,7 +85,7 @@ export type HTMLFactory<El extends keyof JSX.IntrinsicElements> = Ref<
  * @returns {HTMLElementProps<El>} Merged props with className handling
  */
 export function propsHTML<El extends keyof JSX.IntrinsicElements>(
-  overideProps: HTMLElementProps<El>,
+  overideProps: HTMlFactoryProps<El>,
   ref?: Ref<HTMLFactory<El>>,
   initialProps?: HTMLElementProps<El>
 ) {
