@@ -1,8 +1,8 @@
 import {
-  ComponentType,
+  ComponentPropsWithRef,
+  ComponentRef,
   DetailedHTMLProps,
   forwardRef,
-  ForwardRefRenderFunction,
   HTMLAttributes,
   JSX,
   PropsWithChildren,
@@ -14,17 +14,34 @@ import { clsx } from './clsx';
  * Type for HTML element props with proper TypeScript support
  * @template El The HTML element type, defaults to HTMLElement
  */
-export type HTMLElementProps<El = HTMLElement> = DetailedHTMLProps<
-  HTMLAttributes<El>,
-  El
->;
+export type HTMLElementProps<El extends keyof JSX.IntrinsicElements> =
+  DetailedHTMLProps<HTMLAttributes<El>, El>;
 
 /**
  * Type for HTML factory component props
  * @template El The HTML element type, defaults to HTMLElement
  */
-export type HTMlFactoryProps<El = HTMLElement> = PropsWithChildren<
-  HTMLElementProps<El>
+export type HTMlFactoryProps<El extends keyof JSX.IntrinsicElements> =
+  PropsWithChildren<HTMLElementProps<El>>;
+
+/**
+ * A type representing a reference to a React component factory for a specific HTML element.
+ * This type combines React's ref functionality with the component reference for DOM elements.
+ *
+ * @template El - The HTML element type that extends keyof JSX.IntrinsicElements (e.g., 'div', 'span', 'button')
+ * @type {Ref<ComponentRef<El>>} - A React ref pointing to the component reference of the specified element
+ *
+ * @example
+ * // Declaring a ref for a button factory component
+ * const buttonRef = useRef<HTMLFactory<'button'>>(null);
+ *
+ * // Using with a factory component
+ * <Button ref={buttonRef}>Click me</Button>
+ *
+ * @since 0.0.2
+ */
+export type HTMLFactory<El extends keyof JSX.IntrinsicElements> = Ref<
+  ComponentRef<El>
 >;
 
 /**
@@ -35,9 +52,9 @@ export type HTMlFactoryProps<El = HTMLElement> = PropsWithChildren<
  * @param {HTMLElementProps<El>} [initialProps] - Optional initial props
  * @returns {HTMLElementProps<El>} Merged props with className handling
  */
-export function propsHTML<El = HTMLElement>(
+export function propsHTML<El extends keyof JSX.IntrinsicElements>(
   overideProps: HTMLElementProps<El>,
-  ref?: Ref<El>,
+  ref?: Ref<HTMLFactory<El>>,
   initialProps?: HTMLElementProps<El>
 ) {
   const { className: restClass, ...rest } = overideProps;
@@ -46,7 +63,7 @@ export function propsHTML<El = HTMLElement>(
     ...rest,
     ref,
     className: clsx(initialProps?.className, restClass),
-  };
+  } as ComponentPropsWithRef<El>;
 }
 
 /**
@@ -65,17 +82,15 @@ export function propsHTML<El = HTMLElement>(
  * <P className="text-red-500">This will have both classes</P>
  */
 export function factory<El extends keyof JSX.IntrinsicElements>(
-  tag: El,
+  Tag: El,
   displayName: string,
   initialProps?: HTMlFactoryProps<El>
 ) {
-  const Component = (props: HTMlFactoryProps<El>, ref: Ref<El>) => {
-    const Comp = tag as unknown as ComponentType<HTMlFactoryProps<El>>;
-    return <Comp {...propsHTML<El>(props, ref, initialProps)} />;
-  };
-  Component.displayName = displayName;
-
-  return forwardRef(
-    Component as ForwardRefRenderFunction<El, Omit<HTMlFactoryProps, 'ref'>>
+  const Component = forwardRef<HTMLFactory<El>, HTMlFactoryProps<El>>(
+    (props, ref) => {
+      return <Tag {...(propsHTML<El>(props, ref, initialProps) as any)} />;
+    }
   );
+  Component.displayName = displayName;
+  return Component;
 }
