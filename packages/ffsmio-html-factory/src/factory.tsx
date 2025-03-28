@@ -73,7 +73,7 @@ export type HTMLFactory<El extends keyof JSX.IntrinsicElements> =
  * Type for HTML factory component props
  * @template El The HTML element type, defaults to HTMLElement
  */
-export type HTMlFactoryProps<El extends keyof JSX.IntrinsicElements> =
+export type HTMLFactoryProps<El extends keyof JSX.IntrinsicElements> =
   PropsWithChildren<HTMLElementProps<El>>;
 
 /**
@@ -85,11 +85,11 @@ export type HTMlFactoryProps<El extends keyof JSX.IntrinsicElements> =
  * @returns {HTMLElementProps<El>} Merged props with className handling
  */
 export function propsHTML<El extends keyof JSX.IntrinsicElements>(
-  overideProps: HTMlFactoryProps<El>,
+  overrideProps: HTMLFactoryProps<El>,
   ref?: Ref<HTMLFactory<El>>,
   initialProps?: HTMLElementProps<El>
 ) {
-  const { className: restClass, ...rest } = overideProps;
+  const { className: restClass, ...rest } = overrideProps;
   return {
     ...initialProps,
     ...rest,
@@ -116,9 +116,9 @@ export function propsHTML<El extends keyof JSX.IntrinsicElements>(
 export function factory<El extends keyof JSX.IntrinsicElements>(
   Tag: El,
   displayName: string,
-  initialProps?: HTMlFactoryProps<El>
+  initialProps?: HTMLFactoryProps<El>
 ) {
-  const Component = forwardRef<HTMLFactory<El>, HTMlFactoryProps<El>>(
+  const Component = forwardRef<HTMLFactory<El>, HTMLFactoryProps<El>>(
     (props, ref) => {
       return <Tag {...(propsHTML<El>(props, ref, initialProps) as any)} />;
     }
