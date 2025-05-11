@@ -34,6 +34,30 @@ Yes, @ffsm/factory works with any React-based UI library. You can wrap component
 
 Yes, `@ffsm/factory` is compatible with React Server Components, but be aware that some dynamic features might need client-side hydration.
 
+## Why Choose @ffsm/factory?
+
+While there are many component libraries and styling solutions available, `@ffsm/factory` offers unique advantages that set it apart:
+
+### Compared to UI Libraries (Material UI, Chakra UI, etc.)
+
+- **Zero Design Opinions**: Unlike UI libraries that come with predefined styles, factory lets you build components with your own design system
+- **Lightweight**: No bloated dependencies, just the functionality you need
+- **Customization First**: Built for maximum flexibility rather than conforming to specific design patterns
+
+### Compared to Styling Libraries (styled-components, emotion)
+
+- **Beyond Styling**: Factory handles not just styling but component composition, conditional rendering, and prop management
+- **Declarative Patterns**: Built-in support for common UI patterns without extra boilerplate
+- **No CSS-in-JS**: Works with your preferred styling approach - CSS modules, Tailwind, or vanilla CSS
+
+### Compared to Component Utilities (Radix UI, HeadlessUI)
+
+- **Full Component Creation**: Not just unstyled primitives, but a complete solution for component creation
+- **Simplified API**: Less verbose than hook-based component creation patterns
+- **Unified Solution**: Combines accessibility, composition, and styling concerns in one tool
+
+> _Note: More detailed comparisons with specific code examples will be added in future documentation updates._
+
 ## Performance Considerations
 
 - Components created with `factory()` have minimal runtime overhead
