@@ -76,8 +76,6 @@ export function AsSlot<Props extends ObjectProps>(
     ref,
   };
 
-  const child = children as unknown as AsComponentProps;
-
   return cloneElement(outlet, {
     ...newOutletProps,
     children: (

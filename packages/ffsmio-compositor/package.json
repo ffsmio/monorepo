@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/compositor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A collection of declarative React utility components for simplified component composition, conditional rendering, and prop management - making React UI development more maintainable and expressive.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

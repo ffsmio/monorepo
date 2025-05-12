@@ -222,6 +222,7 @@ Renders:
 
 - **Simplified Conditional Rendering**: Replaces ternary expressions and `&&` patterns
 - **Declarative API**: Makes conditional rendering more readable
+- **Function Conditions**: Supports functions and async functions as conditions
 - **Falsy Value Handling**: Optional strict falsy checking for empty strings, zero, etc.
 - **Prop Forwarding**: Passes additional props to rendered children
 
@@ -243,6 +244,28 @@ function UserSection({ user }) {
 ```
 
 This renders the user info div only when `user` exists (is not `undefined` or `false`).
+
+**Using Function Conditions**
+
+You can use a function as the condition, which is useful for dynamic evaluations:
+
+```jsx
+<AsNode of={(props) => userService.hasPermission('admin')}>
+  <AdminPanel />
+</AsNode>
+```
+
+The function receives all props passed to AsNode, allowing for contextual conditions.
+
+**Async Conditions**
+
+AsNode also supports async functions for conditions that need to be resolved:
+
+```jsx
+<AsNode of={async () => await checkUserSubscription()}>
+  <PremiumContent />
+</AsNode>
+```
 
 #### Comparing with Traditional Conditional Rendering
 
@@ -300,12 +323,12 @@ This will only render the list when there are actual results.
 
 ##### Props
 
-| Prop       | Type      | Default   | Description                                              |
-| ---------- | --------- | --------- | -------------------------------------------------------- |
-| `children` | ReactNode | required  | Content to conditionally render                          |
-| `of`       | ReactNode | undefined | The condition that determines if children render         |
-| `falsy`    | boolean   | false     | When true, any falsy value prevents rendering            |
-| `...rest`  | any       | -         | Additional props passed to children through `AsInstance` |
+| Prop       | Type      | Default   | Description                                                                                     |
+| ---------- | --------- | --------- | ----------------------------------------------------------------------------------------------- |
+| `children` | ReactNode | required  | Content to conditionally render                                                                 |
+| `of`       | unknown   | undefined | The condition that determines if children render. Maybe using as a function or promise function |
+| `falsy`    | boolean   | false     | When true, any falsy value prevents rendering                                                   |
+| `...rest`  | any       | -         | Additional props passed to children through `AsInstance`                                        |
 
 #### Use Cases
 
@@ -313,6 +336,7 @@ This will only render the list when there are actual results.
 - Showing components only when data is available
 - Feature flags and toggles
 - Simplifying complex conditional rendering logic
+- Dynamic conditions that depend on runtime state or API calls
 
 ### AsSlot Component
 
@@ -443,6 +467,7 @@ type RenderFunction<Props> = (props: Props) => ReactNode;
 
 - **If/Else Pattern**: Renders either main content or fallback content
 - **Declarative API**: Makes conditional rendering more readable
+- **Function Conditions**: Supports functions and async functions for dynamic evaluation
 - **Falsy Value Handling**: Optional strict falsy checking
 - **Prop Forwarding**: Passes props to whichever content is rendered
 
@@ -461,6 +486,34 @@ function ProfileSection({ user, isLoading }) {
 ```
 
 This renders the `UserProfile` when a user exists and it's not loading, or a `LoadingSpinner` otherwise.
+
+**Using Function Conditions**
+
+You can use a function as the condition, which is useful for dynamic evaluations:
+
+```jsx
+<Condition
+  when={(props) => userService.hasPermission('admin')}
+  fallback={<AccessDenied />}
+>
+  <AdminPanel />
+</Condition>
+```
+
+The function receives all props passed to Condition, allowing for contextual conditions.
+
+**Async Conditions**
+
+Condition also supports async functions for conditions that need to be resolved:
+
+```jsx
+<Condition
+  when={async () => await checkUserSubscription()}
+  fallback={<SubscribePrompt />}
+>
+  <PremiumContent />
+</Condition>
+```
 
 #### Enhanced Falsy Checking
 
@@ -535,13 +588,13 @@ function ProfileSection({ user, isLoading }) {
 
 ##### Props
 
-| Prop       | Type      | Default   | Description                                         |
-| ---------- | --------- | --------- | --------------------------------------------------- |
-| `children` | ReactNode | required  | Content to display when condition is truthy         |
-| `when`     | unknown   | undefined | The condition that determines which content to show |
-| `falsy`    | boolean   | false     | When true, any falsy value triggers fallback        |
-| `fallback` | ReactNode | undefined | Content to display when condition is falsy          |
-| `...rest`  | any       | -         | Props passed to whichever content is rendered       |
+| Prop       | Type      | Default   | Description                                                                                        |
+| ---------- | --------- | --------- | -------------------------------------------------------------------------------------------------- |
+| `children` | ReactNode | required  | Content to display when condition is truthy                                                        |
+| `when`     | unknown   | undefined | The condition that determines which content to show, maybe using as a function or promise function |
+| `falsy`    | boolean   | false     | When true, any falsy value triggers fallback                                                       |
+| `fallback` | ReactNode | undefined | Content to display when condition is falsy                                                         |
+| `...rest`  | any       | -         | Props passed to whichever content is rendered                                                      |
 
 #### Use Cases
 
@@ -549,6 +602,7 @@ function ProfileSection({ user, isLoading }) {
 - Showing different UI based on user permissions or roles
 - Displaying error states when operations fail
 - Implementing feature flags or experimental features
+- Dynamic conditions that depend on runtime state or API calls
 
 ### Empty Component
 
