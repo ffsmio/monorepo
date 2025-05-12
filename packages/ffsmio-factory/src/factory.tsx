@@ -5,7 +5,6 @@ import {
   forwardRef,
   ForwardRefExoticComponent,
   PropsWithoutRef,
-  ReactNode,
   RefAttributes,
 } from 'react';
 import {
@@ -17,15 +16,11 @@ import {
   ObjectProps,
 } from './types';
 import { extractProps, filterProps } from './utils';
-import { AsSlot } from '@ffsm/compositor/as-slot';
-import { AsNode } from '@ffsm/compositor/as-node';
-import { Empty } from '@ffsm/compositor/empty';
-import { Condition } from '@ffsm/compositor/condition';
 
 /**
- * Creates a reusable factory component with built-in composition features.
- * Factory components support conditional rendering, slot-based composition,
- * empty state handling, and prop management in a declarative way.
+ * Creates a reusable factory component with customizable rendering.
+ * Factory components support dynamic props, type-safe forwarding,
+ * and customizable rendering through template functions.
  *
  * @template AdditionalProps - Additional props type that the factory component accepts
  * @template Element - The base element type, defaults to 'div'
@@ -33,7 +28,7 @@ import { Condition } from '@ffsm/compositor/condition';
  * @param {FactoryInitialProps<Element, AdditionalProps>} [init] - Initial props or props factory function
  * @param {FactoryOptions<ElementType, AdditionalProps>} [options={}] - Additional options for the factory
  * @returns {ForwardRefExoticComponent<PropsWithoutRef<FactoryProps<Element, AdditionalProps>> & RefAttributes<Factory<Element>>>}
- *   A forward ref component with all specified features
+ *   A forward ref component with the specified features
  *
  * @example
  * // Basic usage - create a Button component
@@ -48,25 +43,40 @@ import { Condition } from '@ffsm/compositor/condition';
  * }));
  *
  * @example
- * // With slot-based composition
- * const Panel = factory('Panel', {
- *   asSlot: true,
- *   outlet: <div className="panel-wrapper" />
- * });
+ * // With custom template for form field layout
+ * const FormInput = factory(
+ *   'FormInput',
+ *   {
+ *     as: 'input',
+ *     className: 'form-control'
+ *   },
+ *   {
+ *     template: (Component, props, initProps) => (
+ *       <div className="form-group">
+ *         {props.label && <label>{props.label}</label>}
+ *         <Component {...props} />
+ *         {props.error && <div className="error">{props.error}</div>}
+ *       </div>
+ *     )
+ *   }
+ * );
  *
  * @example
- * // With conditional rendering
- * const AdminSection = factory('AdminSection', {
- *   condition: (props) => props.isAdmin,
- *   conditionFallback: <AccessDenied />
- * });
- *
- * @example
- * // With empty state handling
- * const UserList = factory('UserList', {
- *   emptyFallback: <p>No users found</p>,
- *   Component: 'ul'
- * });
+ * // Filtering props with options
+ * const Link = factory(
+ *   'Link',
+ *   { as: 'a' },
+ *   {
+ *     excludeProps: ['isExternal'],
+ *     template: (Component, props, initProps) => (
+ *       <Component
+ *         {...props}
+ *         target={initProps.isExternal ? '_blank' : undefined}
+ *         rel={initProps.isExternal ? 'noopener noreferrer' : undefined}
+ *       />
+ *     )
+ *   }
+ * );
  */
 export function factory<
   AdditionalProps extends ObjectProps,
@@ -76,6 +86,9 @@ export function factory<
   init?: FactoryInitialProps<Element, AdditionalProps>,
   options: FactoryOptions<ElementType, AdditionalProps> = {}
 ) {
+  const template =
+    options.template || ((Component, props) => <Component {...props} />);
+
   const FactoryElement = forwardRef(function FactoryElement<
     El extends ElementType = Element,
   >(
@@ -86,69 +99,22 @@ export function factory<
       typeof init === 'function'
         ? init(props as FactoryProps<Element, AdditionalProps>)
         : init;
-    const {
-      Component,
-      asSlot,
-      outlet,
-      children,
-      asNode,
-      asNodeFalsy,
-      emptyFallback,
-      condition,
-      conditionFallback,
-      conditionFalsy,
-      merged,
-      initProps,
-    } = extractProps(
+
+    const { Component, children, merged, initProps } = extractProps(
       solvedInit as InitialProps<Element, AdditionalProps>,
       props as PropsWithoutRef<FactoryProps<ElementType, AdditionalProps>>
     );
+
     const filtered = filterProps(
       merged,
       options
     ) as ComponentPropsWithRef<Element>;
 
-    let content = children;
-
-    if (emptyFallback) {
-      content = <Empty fallback={emptyFallback}>{content}</Empty>;
-    }
-
-    if (condition !== undefined) {
-      content = (
-        <Condition
-          when={condition}
-          falsy={conditionFalsy}
-          fallback={conditionFallback}
-        >
-          {content}
-        </Condition>
-      );
-    }
-
-    if (asSlot) {
-      content = (
-        <AsSlot outlet={outlet as ReactNode} outletProps={initProps}>
-          {content}
-        </AsSlot>
-      );
-    }
-
-    const render = (
-      <Component {...filtered} ref={ref}>
-        {content}
-      </Component>
+    return template(
+      Component,
+      { ...filtered, ref, children },
+      initProps as InitialProps<ElementType, AdditionalProps>
     );
-
-    if (asNode) {
-      return (
-        <AsNode of={children} falsy={asNodeFalsy}>
-          {render}
-        </AsNode>
-      );
-    }
-
-    return render;
   }) as ForwardRefExoticComponent<
     PropsWithoutRef<FactoryProps<Element, AdditionalProps>> &
       RefAttributes<Factory<Element>>

@@ -2,6 +2,7 @@ import {
   ComponentProps,
   ComponentPropsWithoutRef,
   ComponentPropsWithRef,
+  ComponentType,
   ElementType,
   JSX,
   ReactNode,
@@ -97,6 +98,19 @@ export type FactoryOptions<
   shouldForwardProp?: (
     key: keyof FactoryProps<Element, AdditionalProps>
   ) => boolean;
+
+  /**
+   * Template function to customize rendering of the component
+   * @param Component - The component type to render (div, button, custom component, etc.)
+   * @param props - The processed props including ref and children
+   * @param initProps - The initial props provided to the factory
+   * @returns A React node representing the rendered content
+   */
+  template?(
+    Component: ComponentType<ComponentPropsWithRef<Element>>,
+    props: ComponentPropsWithRef<Element>,
+    initProps: InitialProps<Element, AdditionalProps>
+  ): ReactNode;
 };
 
 /**
@@ -152,31 +166,6 @@ export type InitialProps<
 
   /** Default element type to render */
   as?: Element;
-
-  // Support AsSlot component
-  /** Enable slot-based composition */
-  asSlot?: boolean;
-
-  // Support AsNode component
-  /** Enable conditional rendering based on children */
-  asNode?: boolean;
-
-  /** Use strict falsy checking for asNode */
-  asNodeFalsy?: boolean;
-
-  // Support Empty component
-  /** Content to display when children are empty */
-  emptyFallback?: ReactNode;
-
-  // Support Condition component
-  /** Condition for conditional rendering */
-  condition?: unknown;
-
-  /** Content to display when condition is falsy */
-  conditionFallback?: ReactNode;
-
-  /** Use strict falsy checking for condition */
-  conditionFalsy?: boolean;
 } & AdditionalProps &
   ExtendedProps<
     ExtractProps<

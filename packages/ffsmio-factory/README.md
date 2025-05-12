@@ -6,65 +6,65 @@
 
 ## Table of Contents
 
+- [Introduction](#introduction)
 - [Installation](#installation)
 - [Core Features](#core-features)
 - [Basic Usage](#basic-usage)
-- [Advanced Features](#advanced-features)
+- [Component Factory](#component-factory)
   - [Dynamic Props Initialization](#dynamic-props-initialization)
+  - [Advanced Configuration Options](#advanced-configuration-options)
+- [Compositor Integration](#compositor-integration)
+  - [Installation](#compositor-installation)
+  - [Usage](#compositor-usage)
   - [Slot-Based Composition](#slot-based-composition)
   - [Conditional Rendering](#conditional-rendering)
   - [Empty State Handling](#empty-state-handling)
   - [Combined Features](#combined-features)
+- [Integration with Tailwind CSS](#integration-with-tailwind-css)
+  - [Creating Tailwind Component Libraries](#creating-tailwind-component-libraries)
+  - [Building UI Systems with Tailwind + Factory](#building-ui-systems-with-tailwind--factory)
+  - [Advantages Over Direct Tailwind Usage](#advantages-over-direct-tailwind-usage)
 - [API Reference](#api-reference)
+  - [factory()](#factory)
+  - [Init Props](#init-props)
+  - [Options](#options)
 - [Type System](#type-system)
+  - [Core Types](#core-types)
+  - [Using Generic Types](#using-generic-types)
+  - [Advanced Type Features](#advanced-type-features)
+- [Utilities](#utilities)
+  - [clsx](#clsx)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [Why Choose @ffsm/factory?](#why-choose-ffsmfactory)
+  - [Compared to UI Libraries](#compared-to-ui-libraries)
+  - [Compared to Styling Libraries](#compared-to-styling-libraries)
+  - [Compared to Component Utilities](#compared-to-component-utilities)
+- [Performance Considerations](#performance-considerations)
 - [Compatibility](#compatibility)
 - [Related Packages](#related-packages)
 
-## Frequently Asked Questions
+## Introduction
 
-### How is @ffsm/factory different from styled-components?
+`@ffsm/factory` is a powerful component creation system for React that streamlines how you build, compose,
+and manage reusable UI components. Unlike traditional component libraries, factory doesn't impose design opinions
+but instead focuses on providing a flexible and type-safe foundation for creating your own component ecosystem.
 
-While `styled-components` focuses on styling with CSS-in-JS, `@ffsm/factory` provides a more comprehensive approach to component creation with built-in composition patterns, conditional rendering, and prop management.
+At its core, `@ffsm/factory` solves common challenges in component development:
 
-### Can I use @ffsm/factory with other UI libraries?
+- **Component Creation Overhead**: Simplifies creating consistent components with less boilerplate
+- **Prop Management Complexity**: Handles prop forwarding, filtering, and merging automatically
+- **Type Safety Challenges**: Provides comprehensive TypeScript support with proper generic typing
+- **Composition Patterns**: Offers built-in patterns for component composition
+- **UI Pattern Repetition**: Consolidates common UI patterns into declarative APIs
 
-Yes, @ffsm/factory works with any React-based UI library. You can wrap components from Material UI, Chakra UI, or any other library using `factory()`.
+The library comes in two versions:
 
-### Does it work with React Server Components?
-
-Yes, `@ffsm/factory` is compatible with React Server Components, but be aware that some dynamic features might need client-side hydration.
-
-## Why Choose @ffsm/factory?
-
-While there are many component libraries and styling solutions available, `@ffsm/factory` offers unique advantages that set it apart:
-
-### Compared to UI Libraries (Material UI, Chakra UI, etc.)
-
-- **Zero Design Opinions**: Unlike UI libraries that come with predefined styles, factory lets you build components with your own design system
-- **Lightweight**: No bloated dependencies, just the functionality you need
-- **Customization First**: Built for maximum flexibility rather than conforming to specific design patterns
-
-### Compared to Styling Libraries (styled-components, emotion)
-
-- **Beyond Styling**: Factory handles not just styling but component composition, conditional rendering, and prop management
-- **Declarative Patterns**: Built-in support for common UI patterns without extra boilerplate
-- **No CSS-in-JS**: Works with your preferred styling approach - CSS modules, Tailwind, or vanilla CSS
-
-### Compared to Component Utilities (Radix UI, HeadlessUI)
-
-- **Full Component Creation**: Not just unstyled primitives, but a complete solution for component creation
-- **Simplified API**: Less verbose than hook-based component creation patterns
-- **Unified Solution**: Combines accessibility, composition, and styling concerns in one tool
-
-> _Note: More detailed comparisons with specific code examples will be added in future documentation updates._
-
-## Performance Considerations
-
-- Components created with `factory()` have minimal runtime overhead
-- For optimal performance with large lists, consider memoizing factory components with `React.memo`
-- When using function props (like condition or dynamic className), consider memoizing these functions with `useCallback`
+- **Basic Factory** (`@ffsm/factory`): Core functionality for component creation, styling, and prop management
+- **Compositor Factory** (`@ffsm/factory/compositor`): Extended version with advanced UI patterns like conditional rendering, slots, and empty states
 
 ## Installation
+
+Installing `@ffsm/factory` is straightforward with your preferred package manager:
 
 ```bash
 # Using npm
@@ -77,25 +77,68 @@ yarn add @ffsm/factory
 pnpm add @ffsm/factory
 ```
 
+Basic vs. Compositor Installation
+
+`@ffsm/factory` comes in two versions:
+
+1. **Basic Factory**: The core package with essential component creation features
+
+```jsx
+import { factory } from '@ffsm/factory';
+```
+
+2. **Compositor-Enabled Factory**: Extended version with advanced UI patterns
+
+```bash
+# Install both packages for compositor features
+npm install @ffsm/factory @ffsm/compositor
+```
+
+```jsx
+import { factory } from '@ffsm/factory/compositor';
+```
+
+**TypeScript Support**
+
+`@ffsm/factory` includes built-in TypeScript types - no additional packages required.
+
+**Peer Dependencies**
+
+- React 16.8+ (for Hooks support)
+- React DOM 16.8+
+
+**Optional Integrations**
+
+- **Tailwind CSS**: Works excellently with Tailwind for utility-first styling
+- **CSS Modules**: Fully compatible with CSS Modules and other styling approaches
+- **Other UI Libraries**: Can wrap components from any React UI library
+
+Choose the installation that matches your requirements - start with the basic package for simple component creation,
+or include the compositor package for advanced UI patterns.
+
 ## Core Features
 
+`@ffsm/factory` provides a comprehensive set of features to streamline React component development:
+
 - **Component Creation**: Easily create reusable components with consistent APIs
-- **Composition Patterns**: Built-in support for slots, conditional rendering, and empty states
 - **Prop Management**: Smart prop merging and filtering with type safety
 - **Ref Forwarding**: Automatic ref handling for all created components
 - **TypeScript Integration**: Full TypeScript support with proper generic types
 - **Flexible API**: Support for static and dynamic initialization
-- **Integration with @ffsm/compositor**: Leverage all compositor utilities in factory components
+- **Template Functions**: Customize component rendering with template functions
+- **Composition Patterns**: Built-in support for advanced UI patterns (with compositor)
 
-## Basic Usage
+### Basic Factory Features
 
-```jsx
+The core factory functionality focuses on simplified component creation:
+
+```tsx
 import { factory } from '@ffsm/factory';
 
 // Create a simple button component
-const Button = factory('Button', {
+const Button = factory<{}>('Button', {
   className: 'btn',
-  Component: 'button',
+  as: 'button',
 });
 
 // Use it in your app
@@ -108,19 +151,504 @@ function App() {
 }
 ```
 
+### Compositor Integration Features
+
+When used with the compositor package, additional UI patterns are available:
+
+- **Conditional Rendering**: Show components based on conditions or state
+- **Empty State Handling**: Display fallback content when children are empty
+- **Slot-Based Composition**: Render children into specific locations in a component
+- **Node-Based Rendering**: Conditionally render based on children existence
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// Component that only renders for authenticated users
+const ProtectedContent = factory<{}>('ProtectedContent', {
+  condition: (props) => props.isAuthenticated,
+  conditionFallback: <LoginPrompt />,
+});
+
+// Usage
+<ProtectedContent isAuthenticated={user?.authenticated}>
+  <UserDashboard />
+</ProtectedContent>;
+```
+
+### Advanced Prop Management
+
+Factory components automatically handle:
+
+- **Prop Forwarding**: Pass appropriate props to the DOM or wrapped components
+- **Prop Merging**: Intelligently combine className, style and other props
+- **Prop Filtering**: Exclude specific props from being forwarded to DOM elements
+- **Custom Prop Logic**: Control exactly which props get forwarded and how
+
+All these features are designed to work together seamlessly, providing a robust foundation
+for building React component libraries or design systems.
+
+## Basic Usage
+
+Getting started with `@ffsm/factory` is simple and straightforward. The library provides an intuitive API
+for creating reusable React components with minimal boilerplate:
+
+```tsx
+import { factory } from '@ffsm/factory';
+
+// Create a simple button component
+const Button = factory<{}>('Button', {
+  className: 'btn',
+  as: 'button',
+});
+
+// Use it in your application
+function App() {
+  return (
+    <Button className="btn-primary" onClick={() => alert('Clicked!')}>
+      Click Me
+    </Button>
+  );
+}
+```
+
+### Creating Components
+
+The `factory()` function takes three parameters:
+
+- **Display Name**: Used in React DevTools for easier debugging
+- **Initial Props** _(optional)_: Static props or a function returning props
+- **Options** _(optional)_: Additional configuration for the component
+
+```tsx
+// Static props initialization
+const Card = factory<{}>('Card', {
+  className: 'card',
+  as: 'div',
+});
+
+// Dynamic props based on component props
+const Button = factory<{ variant?: 'primary' | 'secondary' }>(
+  'Button',
+  (props) => ({
+    className: `btn ${props.variant ? `btn-${props.variant}` : ''}`,
+    as: 'button',
+  })
+);
+```
+
+### Using Factory Components
+
+Factory components behave like standard React components:
+
+```jsx
+// Props are merged with initial props
+<Button className="mt-4" onClick={handleClick}>
+  Submit
+</Button>;
+
+// Props can be spread
+const buttonProps = { className: 'large', disabled: true };
+<Button {...buttonProps}>Cancel</Button>;
+
+// Ref forwarding works automatically
+const buttonRef = useRef < HTMLButtonElement > null;
+<Button ref={buttonRef}>Focus Me</Button>;
+```
+
+### Customizing Element Type
+
+You can specify the element type using the `as` prop:
+
+```tsx
+// Create a component with default element type
+const Text = factory<{}>('Text', {
+  className: 'text',
+});
+
+// Override element type when using the component
+<Text as="h1" className="text-xl">Heading</Text>
+<Text as="p" className="text-sm">Paragraph</Text>
+<Text as="span" className="text-xs">Small text</Text>
+```
+
+### Type Safety
+
+Factory components are fully typed with TypeScript, providing excellent autocomplete and type checking:
+
+```tsx
+// Define component-specific props
+type ButtonProps = {
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+};
+
+// Create type-safe component
+const Button = factory<ButtonProps>('Button', (props) => ({
+  className: `btn btn-${props.variant || 'primary'} btn-${props.size || 'md'}`,
+  as: 'button',
+}));
+
+// Type checking and autocomplete work as expected
+<Button
+  variant="primary" // ✓ Autocomplete for 'primary', 'secondary', 'outline'
+  size="lg" // ✓ Autocomplete for 'sm', 'md', 'lg'
+  onClick={() => {}} // ✓ Standard button props available
+/>;
+```
+
+These examples demonstrate the foundation of using `@ffsm/factory` for component creation.
+The subsequent sections will explore more advanced patterns and features.
+
+## Component Factory
+
+The component factory is the heart of `@ffsm/factory`, providing a flexible and type-safe way to
+create reusable React components. This section explores its capabilities, from basic usage to advanced
+configuration options.
+
+**Creating Components with Factory**
+
+The `factory()` function streamlines the process of creating React components by handling boilerplate
+code and providing a consistent API:
+
+```tsx
+import { factory } from '@ffsm/factory';
+
+// Create a simple button component
+const Button = factory<{}>('Button', {
+  className: 'btn',
+  as: 'button',
+});
+
+// Create a card component
+const Card = factory<{}>('Card', {
+  className: 'card',
+});
+```
+
+When you create a component with `factory()`, it:
+
+1. Creates a forward-ref component with the specified display name
+2. Handles prop merging (className, style, etc.)
+3. Sets up proper type definitions with TypeScript
+4. Automatically forwards refs to the underlying DOM element
+
+### Dynamic Props Initialization
+
+One of the most powerful features of the factory is dynamic prop initialization, which allows you to
+define props based on the component's runtime props:
+
+```tsx
+import { factory } from '@ffsm/factory';
+
+// Button component with variant support
+const Button = factory<{
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+}>('Button', (props) => ({
+  className: `
+    btn 
+    ${props.variant ? `btn-${props.variant}` : 'btn-primary'} 
+    ${props.size ? `btn-${props.size}` : 'btn-md'}
+  `,
+  as: 'button',
+}));
+
+// Usage
+<Button variant="secondary" size="lg">
+  Large Secondary Button
+</Button>;
+```
+
+This approach enables:
+
+- **Prop-driven styling**: Change component appearance based on props
+- **Conditional attributes**: Add or remove attributes based on prop values
+- **Computed props**: Derive props from multiple input props
+
+### Advanced Configuration Options
+
+The third parameter to `factory()` lets you configure how the component handles props:
+
+```tsx
+import { factory } from '@ffsm/factory';
+
+// Create a link component with external link handling
+const Link = factory<{
+  isExternal?: boolean;
+}>(
+  'Link',
+  {
+    as: 'a',
+    className: 'link',
+  },
+  {
+    // Don't forward custom props to the DOM
+    excludeProps: ['isExternal'],
+
+    // Custom template function to add security attributes to external links
+    template: (Component, props, initProps) => (
+      <Component
+        {...props}
+        target={initProps.isExternal ? '_blank' : undefined}
+        rel={initProps.isExternal ? 'noopener noreferrer' : undefined}
+      />
+    ),
+  }
+);
+
+// Usage
+<Link href="https://example.com" isExternal>
+  External Link
+</Link>;
+```
+
+**Available Options**
+
+The factory accepts several configuration options to customize behavior:
+
+- **excludeProps**: Array of prop names that shouldn't be forwarded to DOM
+- **shouldForwardProp**: Function to determine if a prop should be forwarded
+- **template**: Custom rendering template for more complex component structures
+
+**Custom Templates**
+
+The template option gives you complete control over how your component renders:
+
+```tsx
+// Create a form field with label and error handling
+const FormField = factory<{
+  label?: string;
+  error?: string;
+}>(
+  'FormField',
+  {
+    as: 'input',
+    className: 'form-control',
+  },
+  {
+    excludeProps: ['label', 'error'],
+    template: (Component, props, initProps) => (
+      <div className="form-group">
+        {initProps.label && (
+          <label className="form-label">{initProps.label}</label>
+        )}
+        <Component {...props} />
+        {initProps.error && <div className="form-error">{initProps.error}</div>}
+      </div>
+    ),
+  }
+);
+
+// Usage
+<FormField
+  label="Email Address"
+  type="email"
+  placeholder="your@email.com"
+  error={errors.email}
+/>;
+```
+
+Templates are useful for:
+
+- Creating layout structures around components
+- Adding decorative elements based on props
+- Implementing complex interaction patterns
+- Creating compound components with multiple parts
+
+By leveraging the configuration options, you can create highly customized and reusable components
+while maintaining clean, developer-friendly APIs.
+
+## Compositor Integration
+
+The Compositor integration extends `@ffsm/factory` with advanced UI patterns leveraging
+the `@ffsm/compositor` package. This powerful combination allows you to create components
+with built-in support for conditional rendering, slot-based composition, and empty state handling.
+
+### Installation
+
+To use the compositor features, you need to install both packages:
+
+```bash
+# Using npm
+npm install @ffsm/factory @ffsm/compositor
+
+# Using yarn
+yarn add @ffsm/factory @ffsm/compositor
+
+# Using pnpm
+pnpm add @ffsm/factory @ffsm/compositor
+```
+
+### Usage
+
+Import factory from the compositor subpath to access all the enhanced features:
+
+```tsx
+// Import the compositor-enabled factory
+import { factory } from '@ffsm/factory/compositor';
+
+// Create components with advanced composition patterns
+const Card = factory<{}>('Card', {
+  className: 'card',
+  emptyFallback: <p>No content available</p>,
+});
+```
+
+### Slot-Based Composition
+
+The slot-based composition pattern allows you to render children into designated "slots" within your component,
+similar to how web components handle content projection:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// Create a dialog with header and content slots
+const Dialog = factory<{}>('Dialog', {
+  className: 'dialog',
+  asSlot: true,
+  children: ({ children }) => (
+    <div className="dialog-container">
+      <div className="dialog-header"></div>
+      <div className="dialog-content">{children}</div>
+    </div>
+  ),
+});
+
+// Usage with content projected into the slot
+<Dialog>This content will be rendered inside the dialog-content div</Dialog>;
+```
+
+### Conditional Rendering
+
+Conditional rendering lets you show or hide components based on specific conditions:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// Component that only renders for authenticated users
+const ProtectedContent = factory<{
+  isAuthenticated: boolean;
+}>('ProtectedContent', (props) => ({
+  condition: props.isAuthenticated,
+  conditionFallback: <LoginPrompt />,
+}));
+
+// Component with async conditions (e.g., permission check)
+const AdminPanel = factory<{
+  userId: string;
+}>('AdminPanel', (props) => ({
+  // Can return a Promise for async checks
+  condition: async () => {
+    const permissions = await fetchUserPermissions(props.userId);
+    return permissions.includes('admin');
+  },
+  conditionFallback: <AccessDenied />,
+}));
+
+// Usage
+<ProtectedContent isAuthenticated={Boolean(user)}>
+  <UserDashboard />
+</ProtectedContent>;
+```
+
+### Empty State Handling
+
+Empty state handling provides fallback content when children are empty or non-existent:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// List with empty state
+const UserList = factory<{}>('UserList', {
+  as: 'ul',
+  className: 'user-list',
+  emptyFallback: <p className="empty-message">No users found</p>,
+});
+
+// Usage with conditional content
+<UserList>
+  {users.length > 0
+    ? users.map((user) => <li key={user.id}>{user.name}</li>)
+    : null}
+</UserList>;
+```
+
+You can also use the `asNode` option to only render a component when it has children:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// Section that only renders when it has content
+const Section = factory<{}>('Section', {
+  className: 'section',
+  asNode: true,
+});
+
+// Won't render anything
+<Section />
+
+// Will render normally
+<Section>
+  <h2>Section Title</h2>
+  <p>Content here</p>
+</Section>
+```
+
+### Combined Features
+
+The real power of compositor integration comes from combining these patterns:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+// Data panel component with loading, empty, and error states
+const DataPanel = factory<{
+  isLoading: boolean;
+  error?: string;
+}>('DataPanel', (props) => ({
+  // Only render when not loading
+  condition: !props.isLoading,
+  conditionFallback: <LoadingSpinner />,
+
+  // Show error message when there's an error
+  asSlot: Boolean(props.error),
+  children: props.error ? (
+    <div className="error-container">{props.error}</div>
+  ) : undefined,
+
+  // When no error but no content, show empty state
+  emptyFallback: <EmptyState message="No data available" />,
+}));
+
+// Usage in a data-fetching scenario
+<DataPanel isLoading={loading} error={error}>
+  {data &&
+    data.items.map((item) => (
+      <div key={item.id} className="data-item">
+        {item.name}
+      </div>
+    ))}
+</DataPanel>;
+```
+
+The compositor integration eliminates the need for repetitive conditional rendering patterns,
+empty state checks, and nested component structures, resulting in cleaner and more maintainable code.
+
+By leveraging these patterns, you can create sophisticated UI components with minimal code
+while maintaining a clean, declarative API that's easy for other developers to use.
+
 ## Integration with Tailwind CSS
 
-`@ffsm/factory` works exceptionally well with Tailwind CSS, allowing you to create reusable components
-with consistent styling while maintaining the utility-first approach.
+`@ffsm/factory` works exceptionally well with Tailwind CSS, allowing you to create reusable
+components with consistent styling while maintaining the utility-first approach.
 
 ### Creating Tailwind Component Libraries
 
 Using factory with Tailwind CSS gives you the best of both worlds: the simplicity of Tailwind's utility
 classes and the reusability of component abstractions:
 
-```jsx
-import { factory } from '@ffsm/factory';
-import { clsx } from '@ffsm/factory/clsx';
+```tsx
+import { factory, clsx } from '@ffsm/factory';
 
 // Create a reusable button component with Tailwind classes
 export const Button = factory<{
@@ -138,17 +666,21 @@ export const Button = factory<{
     (!props.size || props.size === 'md') && 'px-4 py-2 text-base',
 
     // Variant styles
-    props.variant === 'primary' && 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    props.variant === 'secondary' && 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
-    props.variant === 'outline' && 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
-    (!props.variant || props.variant === 'primary') && 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
-  )
+    props.variant === 'primary' &&
+      'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    props.variant === 'secondary' &&
+      'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
+    props.variant === 'outline' &&
+      'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
+    (!props.variant || props.variant === 'primary') &&
+      'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
+  ),
 }));
 
 // Usage
 <Button variant="secondary" size="lg" onClick={handleClick}>
   Save Changes
-</Button>
+</Button>;
 ```
 
 ### Building UI Systems with Tailwind + Factory
@@ -181,12 +713,7 @@ export const FormGroup = factory<{}>('FormGroup', {
 export const Label = factory<{ required?: boolean }>('Label', (props) => ({
   as: 'label',
   className: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1',
-  children: ({ children, required }) => (
-    <>
-      {children}
-      {required && <span className="ml-1 text-red-500">*</span>}
-    </>
-  ),
+  children: props.children,
 }));
 
 export const Input = factory<{
@@ -206,14 +733,14 @@ export const Input = factory<{
 
 Using factory with Tailwind provides several advantages:
 
-1. **Consistency**: Define variants and styles in one place to ensure consistent UI
-2. **DRY Principle**: Avoid repeating the same lengthy class strings throughout your application
-3. **Maintainability**: Update styling in one place rather than hunting through your codebase
-4. **Type Safety**: Get full TypeScript support for component variations
-5. **Prop-Based Styling**: Toggle styles based on props rather than conditional class composition
-6. **Semantic Markup**: Create semantically meaningful components instead of div-soup with classes
+- **Consistency**: Define variants and styles in one place to ensure consistent UI
+- **DRY Principle**: Avoid repeating the same lengthy class strings throughout your application
+- **Maintainability**: Update styling in one place rather than hunting through your codebase
+- **Type Safety**: Get full TypeScript support for component variations
+- **Prop-Based Styling**: Toggle styles based on props rather than conditional class composition
+- **Semantic Markup**: Create semantically meaningful components instead of div-soup with classes
 
-### With Tailwind Plugins
+**With Tailwind Plugins**
 
 Factory components work seamlessly with Tailwind plugins like `@tailwindcss/forms`:
 
@@ -231,285 +758,260 @@ export const Select = factory<{
 }));
 ```
 
-This approach gives you all the benefits of Tailwind's utility-first approach while providing the abstraction
-and reusability of a component library.
+**Advanced Tailwind Integration**
 
-## Advanced Features
+For more complex scenarios, you can leverage dynamic props with Tailwind:
 
-### Dynamic Props Initialization
+```tsx
+import { factory, clsx } from '@ffsm/factory';
 
-```jsx
-import { factory } from '@ffsm/factory';
-import { clsx } from '@ffsm/factory/clsx';
-
-const Card = factory('Card', (props) => ({
+// Text component with color, size and weight variants
+export const Text = factory<{
+  color?: 'primary' | 'secondary' | 'error' | 'success';
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl';
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
+}>('Text', (props) => ({
   className: clsx(
-    'card',
-    props.elevated && 'card-elevated',
-    props.variant && `card-${props.variant}`
+    // Size mapping
+    props.size === 'xs' && 'text-xs',
+    props.size === 'sm' && 'text-sm',
+    props.size === 'base' && 'text-base',
+    props.size === 'lg' && 'text-lg',
+    props.size === 'xl' && 'text-xl',
+    props.size === '2xl' && 'text-2xl',
+    (!props.size || props.size === 'base') && 'text-base',
+
+    // Weight mapping
+    props.weight === 'normal' && 'font-normal',
+    props.weight === 'medium' && 'font-medium',
+    props.weight === 'semibold' && 'font-semibold',
+    props.weight === 'bold' && 'font-bold',
+    (!props.weight || props.weight === 'normal') && 'font-normal',
+
+    // Color mapping
+    props.color === 'primary' && 'text-blue-600 dark:text-blue-400',
+    props.color === 'secondary' && 'text-gray-600 dark:text-gray-400',
+    props.color === 'error' && 'text-red-600 dark:text-red-400',
+    props.color === 'success' && 'text-green-600 dark:text-green-400',
+    (!props.color || props.color === 'primary') &&
+      'text-gray-900 dark:text-white'
   ),
 }));
 
 // Usage
-<Card elevated variant="primary">
-  Card content
-</Card>;
+<Text size="lg" color="error" weight="bold">
+  Something went wrong!
+</Text>;
 ```
 
-### Slot-Based Composition
-
-```jsx
-import { factory } from '@ffsm/factory';
-
-const Panel = factory('Panel', {
-  asSlot: true,
-  outlet: <div className="panel-wrapper" />,
-});
-
-// Usage
-<Panel>
-  <h2>Panel Title</h2>
-  <p>Panel content</p>
-</Panel>;
-```
-
-#### Advanced Slot Examples
-
-You can use the `children` prop as a function to transform the children based on component props:
-
-```tsx
-import { factory } from '@ffsm/factory';
-import { AsNode } from '@ffsm/compositor';
-import { cn } from './utils';
-
-// Form label with required indicator
-export const FormLabel = factory<
-  {
-    required?: boolean;
-  },
-  'label'
->('FormLabel', {
-  as: 'label',
-  className: 'block text-sm font-medium text-slate-200',
-  asSlot: true,
-  children: ({ children, required }) => (
-    <AsNode of={children}>
-      {children}
-      {required && <span className="text-red-500">*</span>}
-    </AsNode>
-  ),
-});
-
-// Usage
-<FormLabel required htmlFor="email">
-  Email Address
-</FormLabel>;
-// Renders: <label class="block text-sm font-medium text-slate-200" for="email">Email Address<span class="text-red-500">*</span></label>
-```
-
-You can also combine dynamic props with slot functionality:
-
-```tsx
-import { factory } from '@ffsm/factory';
-import { AsNode } from '@ffsm/compositor';
-import { cn } from './utils';
-
-// Helper text with error state
-export const FormHelper = factory<
-  {
-    error?: boolean;
-  },
-  'p'
->('FormHelper', ({ error }) => ({
-  as: 'p',
-  className: cn('text-xs mt-1', error ? 'text-red-500' : 'text-slate-400'),
-  children: ({ children }) => <AsNode of={children}>{children}</AsNode>,
-}));
-
-// Usage
-<FormHelper error={!!errorMessage}>
-  {errorMessage || 'Please enter your information'}
-</FormHelper>;
-// Renders: <p class="text-xs mt-1 text-red-500">Invalid email format</p>
-```
-
-These components demonstrate how you can use the factory to create specialized UI components with built-in behaviors, while maintaining a clean API for consumers.
-
-### Conditional Rendering
-
-```tsx
-import { factory } from '@ffsm/factory';
-
-const AdminSection = factory<{
-  isAdmin: boolean;
-}>('AdminSection', (props) => ({
-  condition: props.isAdmin,
-  conditionFallback: <p>You need admin permissions to view this content.</p>,
-}));
-
-// Usage
-<AdminSection isAdmin={user.isAdmin}>
-  <AdminDashboard />
-</AdminSection>;
-```
-
-### Empty State Handling
-
-```jsx
-import { factory } from '@ffsm/factory';
-
-const UserList = factory('UserList', {
-  Component: 'ul',
-  emptyFallback: <p>No users found</p>,
-});
-
-// Usage
-<UserList>
-  {users.map((user) => (
-    <li key={user.id}>{user.name}</li>
-  ))}
-</UserList>;
-```
-
-### Combined Features
-
-You can combine multiple features in a single factory component:
-
-```tsx
-import { factory } from '@ffsm/factory';
-
-const DataPanel = factory<{
-  isLoading: boolean;
-}>('DataPanel', (props) => ({
-  asSlot: true,
-  outlet: <div className="data-panel" />,
-  condition: !props.isLoading,
-  conditionFallback: <LoadingSpinner />,
-  emptyFallback: <EmptyState message="No data available" />,
-}));
-
-// Usage
-<DataPanel isLoading={isLoading}>{data && data.items}</DataPanel>;
-```
-
-### Advanced Configuration Options
-
-Factory components can be further customized using the third parameter of the `factory()` function. This parameter allows you to control how props are filtered and forwarded to the underlying component.
-
-```tsx
-import { factory } from '@ffsm/factory';
-
-// Exclude specific props from being forwarded to DOM
-const Button = factory(
-  'Button',
-  {
-    className: 'btn',
-  },
-  {
-    // Prevent these props from being forwarded to the DOM
-    excludeProps: ['isActive', 'isDisabled', 'variant'],
-  }
-);
-
-// Usage
-<Button isActive variant="primary" onClick={handleClick}>
-  Click Me
-</Button>;
-// The isActive and variant props won't be passed to the DOM element
-```
-
-You can also use a custom function to determine which props should be forwarded:
-
-```tsx
-const Input = factory(
-  'Input',
-  {
-    className: 'input',
-  },
-  {
-    // Only forward standard HTML attributes and data/aria attributes
-    shouldForwardProp: (prop) =>
-      !prop.startsWith('$') &&
-      (prop.startsWith('data-') ||
-        prop.startsWith('aria-') ||
-        !prop.includes('-')),
-  }
-);
-
-// Usage
-<Input $internal={true} data-testid="input" aria-label="Name" />;
-// $internal won't be forwarded, but data-testid and aria-label will
-```
-
-These configuration options are particularly useful in the following scenarios:
-
-1. **Creating design system components** that shouldn't leak implementation details to the DOM
-2. **Avoiding React warnings** about non-standard HTML attributes
-3. **Wrapping third-party components** with specific prop requirements
-4. **Supporting custom props for styling** without forwarding them to DOM elements
-5. **Implementing prop namespacing** with prefixes like $ for internal use
-
-By carefully controlling which props get forwarded, you can create components with cleaner APIs
-that don't cause DOM validation warnings and follow best practices for React component development.
+This approach gives you all the benefits of Tailwind's utility-first approach while providing
+the abstraction and reusability of a component library.
 
 ## API Reference
 
 ### factory()
 
-```typescript
+The core factory function for creating components with standardized patterns and prop handling.
+
+```tsx
+// Basic factory
 function factory<
   AdditionalProps extends Record<string, any>,
   Element extends ElementType = 'div',
 >(
   displayName: string,
-  init?: FactoryInitialProps<Element, AdditionalProps>,
-  options?: FactoryOptions<ElementType, AdditionalProps>
-): ForwardRefExoticComponent<...>;
+  init?: InitialProps<Element, AdditionalProps>,
+  options?: FactoryOptions<Element, AdditionalProps>
+): ForwardRefExoticComponent<
+  PropsWithoutRef<FactoryProps<Element, AdditionalProps>> &
+    RefAttributes<Element>
+>;
+
+// Compositor-enabled factory
+// From '@ffsm/factory/compositor'
+function factory<
+  AdditionalProps extends Record<string, any>,
+  Element extends ElementType = 'div',
+>(
+  displayName: string,
+  init?: InitialProps<Element, AdditionalProps>,
+  options?: CompositorFactoryOptions<Element, AdditionalProps>
+): ForwardRefExoticComponent<
+  PropsWithoutRef<FactoryProps<Element, AdditionalProps>> &
+    RefAttributes<Element>
+>;
 ```
 
-#### Parameters
+**Parameters**
 
-- `displayName`: The display name used in React DevTools
-- `init`: Initial props or a function that returns initial props
-- `options`: Additional options for the factory component
+- `displayName` (string): The display name for the component in React DevTools
+- `init` _(optional)_: Initial props or function that returns props based on component props
+- `options` _(optional)_: Configuration options for the factory component
 
-#### Init Props
+**Returns**
 
-| Prop                | Type                            | Description                                      |
-| ------------------- | ------------------------------- | ------------------------------------------------ |
-| `Component`         | ElementType                     | The base component or HTML element to render     |
-| `asSlot`            | boolean                         | Enable slot-based composition                    |
-| `outlet`            | ReactNode                       | The wrapper component for slot-based composition |
-| `asNode`            | boolean                         | Enable conditional rendering based on children   |
-| `asNodeFalsy`       | boolean                         | Use strict falsy checking for asNode             |
-| `condition`         | unknown \| ((props) => unknown) | Condition for conditional rendering              |
-| `conditionFallback` | ReactNode                       | Content to show when condition is falsy          |
-| `conditionFalsy`    | boolean                         | Use strict falsy checking for condition          |
-| `emptyFallback`     | ReactNode                       | Content to show when children are empty          |
-| `...props`          | any                             | Any additional props to pass to the component    |
+A forward ref React component with the specified props and features.
 
-#### Options
+### Init Props
 
-| Option              | Type                     | Description                                                |
-| ------------------- | ------------------------ | ---------------------------------------------------------- |
-| `excludeProps`      | string[]                 | Props to exclude from being forwarded to DOM               |
-| `shouldForwardProp` | (key: string) => boolean | Custom function to determine if a prop should be forwarded |
+The second parameter (init) of the factory function can be either an object or a function that returns an object. It accepts the following properties:
+
+| Prop        | Type                                        | Description                                         |
+| ----------- | ------------------------------------------- | --------------------------------------------------- |
+| `as`        | `ElementType`                               | The base element type to render (div, button, etc.) |
+| `className` | `string`, `(props) => string`               | Static or dynamic class name                        |
+| `style`     | `CSSProperties`, `(props) => CSSProperties` | Static or dynamic styles                            |
+| `children`  | `ReactNode`, `(props) => ReactNode`         | Static content or render function                   |
+| `...props`  | `any`                                       | Any additional props to pass to the component       |
+
+**Usage Examples**
+
+Static initialization:
+
+```tsx
+const Card = factory<{}>('Card', {
+  className: 'card p-4 rounded shadow',
+  as: 'div',
+});
+```
+
+Dynamic initialization:
+
+```tsx
+const Button = factory<{ variant?: 'primary' | 'secondary' }>(
+  'Button',
+  (props) => ({
+    className: `btn ${props.variant ? `btn-${props.variant}` : 'btn-primary'}`,
+    as: 'button',
+  })
+);
+```
+
+### Options
+
+The third parameter (`options`) allows you to configure advanced behavior of your component:
+
+**Basic Factory Options**
+
+| Option              | Type                                         | Description                                                |
+| ------------------- | -------------------------------------------- | ---------------------------------------------------------- |
+| `excludeProps`      | `Array<string>`                              | Props to exclude from being forwarded to DOM               |
+| `shouldForwardProp` | `(key: keyof Props) => boolean`              | Custom function to determine if a prop should be forwarded |
+| `template`          | `(Component, props, initProps) => ReactNode` | Custom rendering template for the component                |
+
+**Compositor Factory Options (available in '@ffsm/factory/compositor')**
+
+| Option              | Type                             | Description                             |
+| ------------------- | -------------------------------- | --------------------------------------- |
+| `asSlot`            | `boolean`                        | Enable slot-based composition           |
+| `asNode`            | `boolean`                        | Render only when children exist         |
+| `asNodeFalsy`       | `boolean`                        | Use strict falsy checking for asNode    |
+| `emptyFallback`     | `ReactNode`                      | Content to show when children are empty |
+| `condition`         | `unknown` , `(props) => unknown` | Condition for conditional rendering     |
+| `conditionFallback` | `ReactNode`                      | Content to show when condition is falsy |
+| `conditionFalsy`    | `boolean`                        | Use strict falsy checking for condition |
+
+**Usage Examples**
+
+Excluding custom props:
+
+```tsx
+const Link = factory<{ isExternal?: boolean }>(
+  'Link',
+  {
+    as: 'a',
+    className: 'link',
+  },
+  {
+    excludeProps: ['isExternal'],
+  }
+);
+```
+
+Custom template:
+
+```tsx
+const FormField = factory<{ label?: string; error?: string }>(
+  'FormField',
+  {
+    as: 'input',
+    className: 'form-input',
+  },
+  {
+    excludeProps: ['label', 'error'],
+    template: (Component, props, initProps) => (
+      <div className="form-group">
+        {initProps.label && <label>{initProps.label}</label>}
+        <Component {...props} />
+        {initProps.error && <div className="error">{initProps.error}</div>}
+      </div>
+    ),
+  }
+);
+```
+
+Compositor features:
+
+```tsx
+import { factory } from '@ffsm/factory/compositor';
+
+const ProtectedContent = factory<{ isAdmin: boolean }>(
+  'ProtectedContent',
+  {
+    className: 'protected-content',
+  },
+  {
+    condition: (props) => props.isAdmin,
+    conditionFallback: <AccessDenied />,
+  }
+);
+```
+
+### Types
+
+The package exports several utility types for working with factory components:
+
+| Type                                       | Description                                                |
+| ------------------------------------------ | ---------------------------------------------------------- |
+| `FactoryProps<Element, AdditionalProps>`   | Combined props type for factory components                 |
+| `InitialProps<Element, AdditionalProps>`   | Type for initial props or props factory function           |
+| `FactoryOptions<Element, AdditionalProps>` | Type for factory options (basic version)                   |
+| `MaybeFn<Result, Props>`                   | Type that can be either a value or a function returning it |
+| `ObjectProps`                              | Generic object properties type                             |
+
+### Utilities
+
+#### clsx
+
+Utility for conditionally joining class names:
+
+```tsx
+import { clsx } from '@ffsm/factory';
+
+const className = clsx(
+  'base-class',
+  condition && 'conditional-class',
+  { 'object-key': booleanValue },
+  ['array', 'of', 'classes']
+);
+```
 
 ## Type System
 
-The `@ffsm/factory` package includes a powerful type system that provides full TypeScript support. Here's an overview of the key types and how to use them effectively.
+The `@ffsm/factory` package includes a comprehensive type system that provides full TypeScript support.
+This section explains the key types and how to use them effectively in your components.
 
 ### Core Types
 
-#### `FactoryProps<Element, AdditionalProps>`
+**FactoryProps<Element, AdditionalProps>**
 
-The main props type for factory-created components, combining:
+This is the main props type for factory-created components. It combines:
 
-- Element-specific props
+- Element-specific props (like href for an anchor)
 - Your custom additional props
 - Common factory props (className, style, etc.)
 
-```typescript
+```tsx
 // Example: Creating a button with custom props
 type ButtonProps = {
   variant: 'primary' | 'secondary';
@@ -518,47 +1020,47 @@ type ButtonProps = {
 
 const Button = factory<ButtonProps, 'button'>('Button', {
   className: 'btn',
-  Component: 'button'
+  as: 'button',
 });
 
 // Usage with type checking:
 <Button
-  variant="primary"  // ✓ Type checked
-  size="sm"          // ✓ Type checked
+  variant="primary" // ✓ Type checked
+  size="sm" // ✓ Type checked
   onClick={() => {}} // ✓ Inherited from 'button' element
-  invalid={true}     // ✗ Type error
-/>
+  invalid={true} // ✗ Type error
+/>;
 ```
 
-#### `FactoryInitialProps<Element, AdditionalProps>`
+**InitialProps<Element, AdditionalProps>**
 
-A flexible type that represents initial props configuration, can be:
+This flexible type represents initial props configuration and can be either:
 
 1. Static object:
 
-```typescript
-const Card = factory('Card', {
+```tsx
+const Card = factory<{}>('Card', {
   className: 'card',
-  Component: 'div',
+  as: 'div',
 });
 ```
 
 2. Function that returns props based on incoming props:
 
-```typescript
+```tsx
 const Button = factory<ButtonProps>('Button', (props) => ({
   className: `btn btn-${props.variant} btn-${props.size}`,
-  Component: 'button',
+  as: 'button',
 }));
 ```
 
 ### Using Generic Types
 
-#### Custom Component Props
+**Custom Component Props**
 
-Define custom props and maintain full type safety:
+Define custom props with full type safety:
 
-```typescript
+```tsx
 interface TabProps {
   active?: boolean;
   label: string;
@@ -569,34 +1071,38 @@ const Tab = factory<TabProps>('Tab', (props) => ({
   className: props.active ? 'tab active' : 'tab',
   'aria-selected': props.active,
   role: 'tab',
-  Component: 'div'
+  as: 'div',
 }));
 
 // Usage with TypeScript validation
 <Tab
   label="Settings" // Required
-  index={2}        // Required
-  active={true}    // Optional
-/>
+  index={2} // Required
+  active={true} // Optional
+/>;
 ```
 
-#### Element Type Customization
+**Element Type Customization**
 
 Specify a different base element type:
 
-```typescript
+```tsx
 const NavLink = factory<{}, 'a'>('NavLink', {
   className: 'nav-link',
-  Component: 'a'
+  as: 'a',
 });
 
 // Usage with anchor-specific props
-<NavLink href="/about" target="_blank">About</NavLink>
+<NavLink href="/about" target="_blank">
+  About
+</NavLink>;
 ```
 
-### Important Note on Type Inference
+### Advanced Type Features
 
-When creating a factory component that simply forwards props to an existing component without adding any additional props, it's important to explicitly specify an empty object as the `AdditionalProps` generic parameter. This ensures TypeScript correctly infers all the props of the resulting component.
+**Type Inference Best Practices**
+
+When creating a factory component without additional props, always specify an empty object explicitly:
 
 ```tsx
 // Correct approach - explicitly specify empty object
@@ -610,48 +1116,39 @@ export const FormContainer = factory('FormContainer', {
 });
 ```
 
-Without the explicit `<{}>` type parameter, TypeScript might not correctly infer props from the base component, potentially causing type errors when using the component with props that should be valid.
+**Conditional Props**
 
-If you're also specifying a custom element type, include both generic parameters:
+Create components with conditional prop requirements:
 
 ```tsx
-// Forwarding props to an anchor element with no additional props
-export const LinkButton = factory<{}, 'a'>('LinkButton', {
-  className: 'inline-block px-4 py-2 rounded bg-blue-500 text-white',
-  as: 'a',
+// Better approach using union types
+type DialogProps =
+  | { title: string; size?: 'sm' | 'md' | 'lg'; closable: true; onClose: () => void }
+  | { title: string; size?: 'sm' | 'md' | 'lg'; closable?: false; onClose?: never };
+
+const Dialog = factory<DialogProps>('Dialog', {
+  className: 'dialog',
 });
 
-// Now you can use anchor props without type errors
-<LinkButton href="/dashboard" target="_blank">
-  Go to Dashboard
-</LinkButton>;
+// Usage:
+// Valid - onClose is required when closable is true
+<Dialog title="Settings" closable={true} onClose={() => setOpen(false)} />
+
+// Valid - onClose is not allowed when closable is false
+<Dialog title="Info" closable={false} />
+
+// Invalid - missing onClose
+<Dialog title="Error" closable={true} /> // TypeScript error
+
+// Invalid - has onClose when closable is false
+<Dialog title="Warning" closable={false} onClose={() => {}} /> // TypeScript error
 ```
 
-This explicit type parameterization ensures the component maintains full type safety with the underlying element's props.
+**Component Composition Types**
 
-### Advanced Type Features
+Build complex component hierarchies with composed types:
 
-#### Conditional Props
-
-Factory components can accept props conditionally, while maintaining type safety:
-
-```typescript
-type DialogProps = {
-  title: string;
-  size?: 'sm' | 'md' | 'lg';
-  // Only when closable is true, onClose is required
-  closable?: boolean;
-  onClose?: closable extends true ? () => void : never;
-};
-
-const Dialog = factory<DialogProps>('Dialog' /* ... */);
-```
-
-#### Component Composition
-
-When creating complex components, you can compose types:
-
-```typescript
+```tsx
 type CardProps = {
   title: string;
   elevated?: boolean;
@@ -662,41 +1159,75 @@ type CardImageProps = CardProps & {
   imageAlt?: string;
 };
 
-const Card = factory<CardProps>('Card' /* ... */);
-const CardWithImage = factory<CardImageProps>('CardWithImage' /* ... */);
+const Card = factory<CardProps>('Card', {
+  className: 'card',
+});
+
+const CardWithImage = factory<CardImageProps>('CardWithImage', (props) => ({
+  className: `card ${props.elevated ? 'elevated' : ''}`,
+  children: (
+    <>
+      <img src={props.imageSrc} alt={props.imageAlt || props.title} />
+      <h3>{props.title}</h3>
+    </>
+  ),
+}));
 ```
 
-### Type Utilities
+### Utility Types
 
-The package exports several utility types that can be useful when working with React components:
+The package exports several utility types for advanced use cases:
 
-- `MaybeFn<Result, Props>`: A type that can be either a value or a function returning that value
-- `ObjectProps<O>`: Generic object properties type
-- `StyleProp<Element>`: Extracts the style prop type from an element
-- `Factory<Element>`: Gets the ref type from an element type
+- `MaybeFn<Result, Props>`: Type for values that can be either direct or function-returned
+- `ObjectProps`: Generic object properties type
+- `FactoryProps<Element, AdditionalProps>`: Combined props for factory components
+- `FactoryOptions<Element, AdditionalProps>`: Options for factory configuration
 
-These utility types can be imported directly from the package:
+Import these types directly from the package:
 
-```typescript
-import { MaybeFn, ObjectProps } from '@ffsm/factory';
+```tsx
+import { MaybeFn, ObjectProps, FactoryProps } from '@ffsm/factory';
 
-// Dynamic value based on props
-const getDynamicValue: MaybeFn<string, { theme: string }> = (props) =>
-  `color-${props.theme}`;
+// Create a type for a component that needs dynamic styling
+type DynamicComponent<P = {}> = React.FC<
+  P & {
+    styling: MaybeFn<string, P>;
+  }
+>;
 ```
+
+By leveraging these type utilities, you can create type-safe component APIs that provide excellent
+developer experience with autocompletion and type checking.
 
 ## Utilities
 
-### Included Utilities
+`@ffsm/factory` includes several utility functions that help with common component development tasks.
+These utilities can be imported directly from the package and used both within factory components
+and in your application code.
 
-#### clsx
+### [clsx](https://npmjs.com/package/clsx)
 
-This package includes a lightweight version of the [`clsx`](https://www.npmjs.com/package/clsx) utility for conditional class name composition. You can import it directly from the package:
+The package includes a lightweight version of the clsx utility for conditional class name composition,
+allowing you to combine class names dynamically:
 
 ```tsx
 import { clsx } from '@ffsm/factory';
 
-const Button = factory('Button', (props) => ({
+// Basic usage
+const className = clsx(
+  'base-class',
+  condition && 'conditional-class',
+  isActive ? 'active' : 'inactive',
+  { hidden: isHidden, visible: !isHidden }
+);
+
+// Within a factory component
+const Button = factory<{
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+}>('Button', (props) => ({
+  as: 'button',
   className: clsx(
     'btn',
     props.variant && `btn-${props.variant}`,
@@ -706,23 +1237,154 @@ const Button = factory('Button', (props) => ({
 }));
 ```
 
-The included `clsx` utility allows you to conditionally join class names together, similar to the original package but with no external dependencies. It supports:
+The `clsx` utility supports:
 
 - Strings: `'btn'`
 - Objects: `{ 'btn-primary': isPrimary }`
 - Arrays: `['btn', isActive && 'btn-active']`
-- Falsy values are ignored: `false && 'hidden'` → nothing is added
+- Nested conditions: `condition && [subCondition && 'class']`
+- Falsy values are ignored: `false && 'hidden'` results in nothing being added
 
-This eliminates the need to install an additional package for class name management in your projects.
+This eliminates the need for an additional package for class name management in your projects.
 
-> Note: The clsx implementation is derived from the original [clsx](https://www.npmjs.com/package/clsx) package, adapted for internal use with proper attribution to the original source.
+## Frequently Asked Questions
+
+### How is @ffsm/factory different from styled-components?
+
+While `styled-components` focuses on styling with CSS-in-JS, `@ffsm/factory` provides a more comprehensive
+approach to component creation with built-in composition patterns, conditional rendering, and prop management.
+
+### Can I use @ffsm/factory with other UI libraries?
+
+Yes, @ffsm/factory works with any React-based UI library. You can wrap components from Material UI, Chakra UI,
+or any other library using `factory()`.
+
+### Does it work with React Server Components?
+
+Yes, `@ffsm/factory` is compatible with React Server Components, but be aware that some dynamic features
+might need client-side hydration.
+
+### What's the difference between the regular factory and compositor factory?
+
+The regular factory (`import { factory } from '@ffsm/factory'`) provides core functionality for component creation,
+prop forwarding, and templates. The compositor factory (`import { factory } from '@ffsm/factory/compositor'`) adds
+support for advanced UI patterns like conditional rendering, slot-based composition, and empty state handling through
+integration with `@ffsm/compositor`.
+
+### When should I use the basic factory vs. compositor factory?
+
+Use the basic factory when you only need component creation and prop management. Use the compositor factory when
+you need advanced UI patterns like conditional rendering, slots, or empty state handling. The basic factory has
+fewer dependencies and a smaller bundle size.
+
+### Does using the compositor features impact performance?
+
+The compositor integration adds a small runtime overhead, but it's negligible for most applications. The benefits
+of cleaner code and declarative patterns usually outweigh the minimal performance cost. For performance-critical
+scenarios with large lists, consider memoizing components with `React.memo`.
+
+### Do I need to install @ffsm/compositor separately?
+
+Yes, when using the compositor features, you need to install both packages:
+
+```bash
+npm install @ffsm/factory @ffsm/compositor
+```
+
+The basic factory doesn't require the compositor package.
+
+## Why Choose @ffsm/factory?
+
+While there are many component libraries and styling solutions available, `@ffsm/factory` offers unique advantages
+that set it apart:
+
+### Compared to UI Libraries
+
+Traditional UI libraries like Material UI, Chakra UI, or Ant Design provide pre-built components with specific
+design systems. `@ffsm/factory` takes a different approach:
+
+- **Zero Design Opinions**: Create components that match your exact design requirements without fighting against pre-existing styles
+- **Lightweight Core**: No bloated dependencies or unused components - just the functionality you need
+- **Composable Building Blocks**: Build your own design system from the ground up rather than adapting existing components
+- **Progressive Adoption**: Start with a few components and gradually expand without committing to an entire UI framework
+
+### Compared to Styling Libraries
+
+Unlike CSS-in-JS libraries like styled-components or emotion, `@ffsm/factory`:
+
+- **Focuses on Component Logic**: Handles not just styling but composition patterns, conditional rendering, and prop management
+- **Styling Agnostic**: Works with any styling approach - CSS modules, Tailwind, utility classes, or vanilla CSS
+- **Reduced Boilerplate**: Creates consistent components with fewer lines of code
+- **Declarative Patterns**: Simplifies common UI patterns with prop-based APIs instead of imperative code
+
+### Compared to Component Utilities
+
+Headless UI libraries like Radix UI or Headless UI provide unstyled components, but `@ffsm/factory`:
+
+- **Offers Complete Control**: Define both behavior and presentation in a unified API
+- **Simplifies Implementation**: Less verbose than hook-based component creation patterns
+- **Integrates Advanced Patterns**: Built-in support for slots, empty states, and conditional rendering
+- **Prioritizes Developer Experience**: Consistent API with excellent TypeScript integration
+
+### Real-World Benefits
+
+- **Faster Development**: Create new components in minutes instead of hours
+- **Consistent APIs**: Establish patterns that all team members can follow
+- **Better Maintainability**: Centralized component logic with clear separation of concerns
+- **Improved Type Safety**: Full TypeScript support with proper generics and inference
+- **Reduced Bundle Size**: Only include the functionality you need
+- **Flexible Adaptation**: Works with your existing components, libraries, and styling solutions
+
+`@ffsm/factory` is ideal for teams building custom design systems, developers who need flexibility beyond existing UI libraries,
+and projects where component consistency and maintainability are priorities.
+
+## Performance Considerations
+
+`@ffsm/factory` is designed with performance in mind, but there are some considerations to ensure optimal performance in your applications:
+
+- **Component Memoization**: When rendering large lists of factory components, wrap them with React.memo to prevent unnecessary re-renders:
+
+```tsx
+const OptimizedCard = React.memo(factory<CardProps>('Card', {...}));
+```
+
+- **Bundle Size**: The core factory package is lightweight, but including the compositor features will increase bundle size.
+  Use code-splitting to only load the compositor features when needed:
+
+```tsx
+// Dynamic import of compositor-enabled components
+const AdminPanel = lazy(() => import('./AdminPanel'));
+```
+
+- **Conditional Rendering**: When using conditional rendering frequently, prefer the declarative compositor approach over
+  imperative conditionals for better readability and maintainability.
 
 ## Compatibility
 
-- React 16.8+
-- TypeScript 4.5+
-- Works with Next.js, Create React App, Vite, and other React environments
+`@ffsm/factory` is designed to work across a wide range of React environments:
+
+- **React Versions**: Compatible with React 16.8+ (requires hooks support)
+- **React Frameworks**:
+  - Next.js (both Pages and App Router)
+  - Create React App
+  - Vite
+  - Remix
+  - Gatsby
+  - Any other React-based framework
+- **TypeScript**: Full TypeScript support with proper typing and generics
+- **React Server Components**: Compatible with React Server Components, though some dynamic features require client components
+- **Styling Solutions**: Works with any styling approach:
+  - Tailwind CSS
+  - CSS Modules
+  - Styled Components / Emotion
+  - Plain CSS
+  - CSS-in-JS libraries
+- **Browsers**: Supports all modern browsers without polyfills
 
 ## Related Packages
 
-- [@ffsm/compositor](https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-compositor) - Utility components for React composition patterns
+### Core Packages
+
+- `@ffsm/compositor`: The companion package that provides the advanced composition utilities used by factory's compositor integration. Install this package to use the advanced features like slots, conditional rendering, and empty state handling.
+
+These packages are designed to work together to provide a complete solution for building React applications, but each can be used independently according to your specific needs.

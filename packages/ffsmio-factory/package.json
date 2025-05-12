@@ -1,6 +1,6 @@
 {
   "name": "@ffsm/factory",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A powerful component factory for React that simplifies creation of reusable components with built-in support for composition patterns, conditional rendering, prop management, and TypeScript integration.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,27 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-factory"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./compositor": {
+      "types": "./dist/compositor.d.ts",
+      "default": "./dist/compositor.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*"
+      ],
+      "compositor": [
+        "./dist/compositor.d.ts"
+      ]
+    }
   },
   "keywords": [
     "React",
@@ -41,6 +62,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@ffsm/compositor": "0.0.2",
     "@types/node": "22.13.10",
     "@types/react": "19.0.10",
     "react": "19.0.0",
@@ -48,7 +70,13 @@
     "typescript": "5.8.2"
   },
   "peerDependencies": {
+    "@ffsm/compositor": "0.0.2",
     "react": ">=16.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@ffsm/compositor": {
+      "optional": true
+    }
   },
   "scripts": {
     "clean": "rimraf dist",

@@ -76,52 +76,14 @@ export function extractProps<
     clonedInit,
     'style'
   );
-  const asNode = getAndDeleteProp<boolean>(clonedInit, 'asNode', false);
-  const asNodeFalsy = getAndDeleteProp<boolean>(
-    clonedInit,
-    'asNodeFalsy',
-    false
-  );
-  const emptyFallback = getAndDeleteProp<ReactNode>(
-    clonedInit,
-    'emptyFallback',
-    null
-  );
-  const condition = getAndDeleteProp<unknown>(
-    clonedInit,
-    'condition',
-    undefined
-  );
-  const conditionFallback = getAndDeleteProp<ReactNode>(
-    clonedInit,
-    'conditionFallback',
-    null
-  );
-  const conditionFalsy = getAndDeleteProp<boolean>(
-    clonedInit,
-    'conditionFalsy',
-    false
-  );
 
   const Component = getAndDeleteProp<
     ComponentType<ComponentPropsWithRef<Element>>
   >(clonedProps, 'as', 'div');
   const clsx = getAndDeleteProp<ClsxFn>(clonedProps, 'clsx', initClsx);
-  const propClassName = getAndDeleteProp<string>(
-    clonedProps,
-    'className',
-    undefined
-  );
-  const propStyle = getAndDeleteProp<ObjectProps>(
-    clonedProps,
-    'style',
-    undefined
-  );
-  const children = getAndDeleteProp<ReactNode>(
-    clonedProps,
-    'children',
-    undefined
-  );
+  const propClassName = getAndDeleteProp<string>(clonedProps, 'className');
+  const propStyle = getAndDeleteProp<ObjectProps>(clonedProps, 'style');
+  const children = getAndDeleteProp<ReactNode>(clonedProps, 'children');
 
   const merged = Object.assign(
     {},
@@ -150,12 +112,6 @@ export function extractProps<
     asSlot,
     outlet,
     children,
-    asNode,
-    asNodeFalsy,
-    emptyFallback,
-    condition,
-    conditionFallback,
-    conditionFalsy,
     merged: {
       ...merged,
       className,
