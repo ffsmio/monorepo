@@ -1,0 +1,96 @@
+{
+  "name": "@ffsm/utils",
+  "version": "0.0.5",
+  "description": "A collection of utility functions for React and JavaScript, providing type-safe utilities for common tasks like prop management, conditional rendering, and more.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-utils",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-utils"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./clone-deep": {
+      "types": "./dist/clone-deep.d.ts",
+      "default": "./dist/clone-deep.js"
+    },
+    "./get-own-prop": {
+      "types": "./dist/get-own-prop.d.ts",
+      "default": "./dist/get-own-prop.js"
+    },
+    "./is-equal": {
+      "types": "./dist/is-equal.d.ts",
+      "default": "./dist/is-equal.js"
+    },
+    "./is-own": {
+      "types": "./dist/is-own.d.ts",
+      "default": "./dist/is-own.js"
+    },
+    "./merge-object": {
+      "types": "./dist/merge-object.d.ts",
+      "default": "./dist/merge-object.js"
+    },
+    "./to-kebab-case": {
+      "types": "./dist/to-kebab-case.d.ts",
+      "default": "./dist/to-kebab-case.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*"
+      ],
+      "clone-deep": [
+        "./dist/clone-deep.d.ts"
+      ],
+      "get-own-prop": [
+        "./dist/get-own-prop.d.ts"
+      ],
+      "is-equal": [
+        "./dist/is-equal.d.ts"
+      ],
+      "is-own": [
+        "./dist/is-own.d.ts"
+      ],
+      "merge-object": [
+        "./dist/merge-object.d.ts"
+      ],
+      "to-kebab-case": [
+        "./dist/to-kebab-case.d.ts"
+      ]
+    }
+  },
+  "keywords": [
+    "react",
+    "utilities",
+    "type-safe",
+    "prop-management",
+    "conditional-rendering",
+    "javascript",
+    "typescript"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  }
+}
