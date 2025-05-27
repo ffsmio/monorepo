@@ -1,0 +1,80 @@
+{
+  "name": "@ffsm/store",
+  "version": "0.0.1",
+  "description": "A powerful state management library for React, providing a simple and efficient way to manage application state with built-in support for serialization, deserialization, and type safety.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "author": "S3Tech <s3tech.vn@gmail.com>",
+  "homepage": "https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-store",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ffsmio/monorepo/tree/main/packages/ffsmio-store"
+  },
+  "keywords": [
+    "React",
+    "state-management",
+    "store",
+    "serialization",
+    "deserialization",
+    "type-safe",
+    "react-hooks",
+    "global-state",
+    "context-api",
+    "react-patterns",
+    "state-persistence",
+    "react-store",
+    "ffsmio"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./create-slice": {
+      "types": "./dist/create-slice.d.ts",
+      "default": "./dist/create-slice.js"
+    },
+    "./create-store": {
+      "types": "./dist/create-store.d.ts",
+      "default": "./dist/create-store.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*"
+      ],
+      "create-slice": [
+        "./dist/create-slice.d.ts"
+      ],
+      "create-store": [
+        "./dist/create-store.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2",
+    "@ffsm/utils": "^0.0.5",
+    "react": "16",
+    "@types/react": "16"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn build"
+  }
+}
